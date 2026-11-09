@@ -1,26 +1,230 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ============================================================
+   SOFT STUDIO — a warm, playful, premium photobooth theme.
+   Light-only on purpose so the design stays coherent everywhere.
+   ============================================================ */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+@theme {
+  --color-ink: #101828;
+  --color-ink-soft: #344054;
+  --color-muted: #667085;
+  --color-line: #e4e7ec;
+  --color-surface: #ffffff;
+
+  /* Market palette: navy/blue primary, orange accent, cream/white surface. */
+  --color-navy-50: #f4f7fb;
+  --color-navy-100: #e4ecf6;
+  --color-navy-200: #c6d6e9;
+  --color-navy-300: #9bb5d3;
+  --color-navy-400: #5e86b4;
+  --color-navy-500: #2f5c93;
+  --color-navy-600: #1c4374;
+  --color-navy-700: #123257;
+  --color-navy-800: #0b2545;
+  --color-navy-900: #071a33;
+  --color-cream: #fffbf5;
+
+  --color-brand: #1c4374;
+  --color-brand-600: #1c4374;
+  --color-brand-500: #2f5c93;
+  --color-brand-soft: #f4f7fb;
+  --color-brand-tint: #e4ecf6;
+
+  --color-accent: #c2410c;
+  --color-sun: #ea580c;
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  color-scheme: light;
+  --background: #fffbf5;
+  --foreground: #101828;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
+  background-image:
+    radial-gradient(52rem 34rem at 108% -8%, rgba(194, 65, 12, 0.09), transparent 62%),
+    radial-gradient(46rem 30rem at -12% 2%, rgba(11, 37, 69, 0.07), transparent 58%),
+    radial-gradient(40rem 30rem at 50% 120%, rgba(234, 88, 12, 0.06), transparent 60%);
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+  min-height: 100dvh;
+  overscroll-behavior-y: none;
+}
+
+img {
+  -webkit-touch-callout: none;
+}
+
+/* ---------- Safe areas ---------- */
+.safe-bottom {
+  padding-bottom: max(env(safe-area-inset-bottom), 1rem);
+}
+.safe-top {
+  padding-top: max(env(safe-area-inset-top), 0.75rem);
+}
+
+/* ---------- Utilities ---------- */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.touch {
+  touch-action: manipulation;
+}
+.image-fit-cover {
+  object-fit: cover;
+}
+.image-fit-contain {
+  object-fit: contain;
+}
+
+/* ---------- Glass + cards ---------- */
+.glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+}
+
+.shadow-soft {
+  box-shadow:
+    0 1px 2px rgba(11, 37, 69, 0.04),
+    0 12px 40px -18px rgba(11, 37, 69, 0.22);
+}
+.shadow-float {
+  box-shadow:
+    0 2px 6px rgba(11, 37, 69, 0.05),
+    0 24px 60px -20px rgba(11, 37, 69, 0.28);
+}
+
+/* ---------- Animations ---------- */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pop-in {
+  0% { opacity: 0; transform: scale(0.94); }
+  60% { transform: scale(1.01); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-14px) rotate(4deg); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes cam-in {
+  from { opacity: 0; transform: scale(1.04); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes cam-out {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(1.04); }
+}
+@keyframes shutter-flash {
+  0% { opacity: 0.95; }
+  100% { opacity: 0; }
+}
+@keyframes slide-up-soft {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes chip-pop {
+  0% { transform: scale(0.92); }
+  60% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+.animate-cam-in {
+  animation: cam-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.animate-cam-out {
+  animation: cam-out 0.2s ease-in both;
+}
+.animate-shutter-flash {
+  animation: shutter-flash 0.45s ease-out both;
+}
+.animate-slide-up-soft {
+  animation: slide-up-soft 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.animate-chip-pop {
+  animation: chip-pop 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-fade-up {
+  animation: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.animate-pop {
+  animation: pop-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.animate-float {
+  animation: float-slow 7s ease-in-out infinite;
+}
+.animate-spin-slow {
+  animation: spin-slow 1s linear infinite;
+}
+
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+
+/* ---------- Focus ring ---------- */
+.focus-brand:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(194, 65, 12, 0.2);
+}
+
+/* ---------- Text gradient ---------- */
+.text-gradient {
+  background: linear-gradient(120deg, #0b2545 0%, #2f5c93 45%, #c2410c 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---------- Form controls ---------- */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
