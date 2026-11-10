@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { CameraScreen } from "@/components/CameraScreen";
 import { MAX_PHOTOS, usePhotobooth } from "@/lib/photobooth-context";
+import { setLiveClip } from "@/lib/live-recording";
 import { downscaleDataUrl } from "@/lib/canvas";
 
 function fileToDataUrl(file: File): Promise<string> {
@@ -64,6 +65,7 @@ export function PhotoUploader() {
         ),
       );
       // Choosing new photos replaces the old set (kept in the chosen order).
+      setLiveClip(null); // photos from the gallery have no selfie recording
       addUserImages(smalls);
     } catch {
       setError("Gagal membaca file gambar. Coba file lain.");

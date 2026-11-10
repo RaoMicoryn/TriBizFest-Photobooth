@@ -2,6 +2,11 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { haptic } from "@/lib/haptics";
+import {
+  setLiveClip,
+  startLiveRecording,
+  type LiveRecorder,
+} from "@/lib/live-recording";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
@@ -116,6 +121,12 @@ export function CameraScreen({
   const [closing, setClosing] = useState(false);
 
   const captureRef = useRef<HTMLVideoElement>(null);
+  // Live selfie recording (whole session, mirrored + filtered like the preview).
+  const liveRecRef = useRef<LiveRecorder | null>(null);
+  const settingsRef = useRef({ mirror: true, filterId: "normal" });
+  useEffect(() => {
+    settingsRef.current = { mirror, filterId };
+  }, [mirror, filterId]);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const totalShots = previewFrame?.windows.length ?? 1;
@@ -125,6 +136,23 @@ export function CameraScreen({
 
   const aspect = previewFrame ? previewFrame.width / previewFrame.height : 3 / 4;
   const { ref: stageRef, box } = useStageBox(aspect);
+
+  useEffect(() => {
+    if (!stream || liveRecRef.current) return;
+    setLiveClip(null);
+    liveRecRef.current = startLiveRecording(
+      () => captureRef.current,
+      () => settingsRef.current,
+    );
+  }, [stream]);
+
+  // Leaving without finishing: drop the recording.
+  useEffect(() => {
+    return () => {
+      liveRecRef.current?.cancel();
+      liveRecRef.current = null;
+    };
+  }, []);
 
   const filterCss = filterToCss(getFilterById(filterId).params);
   const liveStyle: React.CSSProperties = {
@@ -267,10 +295,13 @@ export function CameraScreen({
   };
 
   /** Accept the photo in review: go on to the next window, or finish. */
-  const acceptShot = () => {
+  const acceptShot = async () => {
     if (!captured) return;
     const next = [...shots, captured];
     if (next.length >= totalShots) {
+      const rec = liveRecRef.current;
+      liveRecRef.current = null;
+      setLiveClip(rec ? await rec.stop() : null);
       onUse(next);
       return;
     }

@@ -22,6 +22,7 @@ import { addHistoryItem } from "@/lib/history";
 import { downloadFile, shareImageFile, useCanShare } from "@/lib/share";
 import { canRecordVideo, createProcessVideo } from "@/lib/timelapse";
 import { haptic } from "@/lib/haptics";
+import { getLiveClip } from "@/lib/live-recording";
 
 const EXPORT_WIDTH = 1200;
 const FILENAME = "photobooth-hasil.png";
@@ -69,6 +70,7 @@ export function DownloadSection() {
   const savedFileRef = useRef<File | null>(null);
   const videoUrlRef = useRef<string | null>(null);
   const [videoSupported, setVideoSupported] = useState(false);
+  const [live, setLive] = useState<VideoResult | null>(null);
 
   useEffect(() => {
     // Feature detection must run on the client only (hydration-safe).
@@ -79,6 +81,25 @@ export function DownloadSection() {
   useEffect(() => {
     return () => {
       if (videoUrlRef.current) URL.revokeObjectURL(videoUrlRef.current);
+    };
+  }, []);
+
+  // The selfie-session recording made by the camera (if any).
+  useEffect(() => {
+    const clip = getLiveClip();
+    if (!clip) return;
+    const url = URL.createObjectURL(clip.blob);
+    const t = window.setTimeout(
+      () =>
+        setLive({
+          file: new File([clip.blob], `photobooth-live.${clip.ext}`, { type: clip.mime }),
+          url,
+        }),
+      0,
+    );
+    return () => {
+      window.clearTimeout(t);
+      URL.revokeObjectURL(url);
     };
   }, []);
 
@@ -230,10 +251,10 @@ export function DownloadSection() {
     }
   };
 
-  const shareVideo = async () => {
-    if (!video) return;
+  const shareVideo = async (v: VideoResult | null = video) => {
+    if (!v) return;
     try {
-      await navigator.share({ files: [video.file], title: "Video Photobooth" });
+      await navigator.share({ files: [v.file], title: "Video Photobooth" });
     } catch {
       /* cancelled or unsupported — the download button is still there */
     }
@@ -321,6 +342,50 @@ export function DownloadSection() {
         )}
       </div>
 
+      {/* Live selfie recording */}
+      {live && (
+        <div className="rounded-[28px] border border-white/70 bg-white/85 p-5 text-center shadow-soft backdrop-blur-xl animate-fade-up stagger-1">
+          <span className="mx-auto mb-3 grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-orange-500 to-orange-700 text-white shadow-lg shadow-orange-600/30">
+            <Film className="h-5 w-5" />
+          </span>
+          <h3 className="text-base font-bold text-ink">Video Live Selfie</h3>
+          <p className="mx-auto mt-1 max-w-[260px] text-xs leading-relaxed text-muted">
+            Rekaman utuh dari kamu mulai bergaya sampai selesai foto, seperti
+            Live Photo.
+          </p>
+          <video
+            src={live.url}
+            controls
+            playsInline
+            loop
+            muted
+            autoPlay
+            className="mx-auto mt-4 max-h-[380px] w-full max-w-[280px] rounded-2xl bg-black shadow-md"
+          />
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <Button
+              variant="accent"
+              size="sm"
+              className="h-11"
+              onClick={() => {
+                haptic("success");
+                downloadFile(live.file, live.file.name);
+              }}
+            >
+              <Download className="h-4 w-4" /> Unduh Video
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-11"
+              onClick={() => shareVideo(live)}
+            >
+              <Share2 className="h-4 w-4" /> Bagikan
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Process video */}
       {videoSupported && (
         <div className="rounded-[28px] border border-white/70 bg-white/85 p-5 text-center shadow-soft backdrop-blur-xl animate-fade-up stagger-1">
@@ -360,7 +425,7 @@ export function DownloadSection() {
                   variant="outline"
                   size="sm"
                   className="h-11"
-                  onClick={shareVideo}
+                  onClick={() => shareVideo(video)}
                 >
                   <Share2 className="h-4 w-4" /> Bagikan
                 </Button>
