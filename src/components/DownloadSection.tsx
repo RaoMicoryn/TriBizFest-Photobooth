@@ -138,9 +138,9 @@ export function DownloadSection() {
           body: result.file,
         });
         if (!res.ok) throw new Error(String(res.status));
-        const data = (await res.json()) as { id: string };
+        const data = (await res.json()) as { path: string };
         if (!cancelled) {
-          setQr({ status: "ready", url: `${window.location.origin}/s/${data.id}` });
+          setQr({ status: "ready", url: `${window.location.origin}${data.path}` });
         }
       } catch {
         if (!cancelled) {
@@ -424,7 +424,7 @@ export function DownloadSection() {
         <h3 className="text-base font-bold text-ink">Scan & Unduh di HP Lain</h3>
         <p className="mx-auto mt-1 max-w-[260px] text-xs leading-relaxed text-muted">
           Pindai kode QR ini di HP temanmu untuk langsung membuka dan mengunduh
-          foto ini. Aktif 30 menit.
+          foto ini.
         </p>
 
         <div className="mt-4 flex min-h-[214px] items-center justify-center">

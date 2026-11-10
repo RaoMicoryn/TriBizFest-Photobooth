@@ -123,9 +123,7 @@ export function CameraScreen({
   const isLastShot = currentShot >= totalShots - 1;
   const sequenceStarted = shots.length > 0 || !!captured;
 
-  const aspect = previewFrame
-    ? previewFrame.width / previewFrame.height
-    : 3 / 4;
+  const aspect = previewFrame ? previewFrame.width / previewFrame.height : 3 / 4;
   const { ref: stageRef, box } = useStageBox(aspect);
 
   const filterCss = filterToCss(getFilterById(filterId).params);
@@ -290,11 +288,9 @@ export function CameraScreen({
   /* ---------------- render ---------------- */
 
   const windows = previewFrame?.windows ?? [{ x: 0, y: 0, w: 1, h: 1 }];
-  const showError =
-    error ??
-    (unsupported
-      ? "Browser ini tidak mendukung akses kamera. Silakan gunakan galeri."
-      : null);
+  const showError = error ?? (unsupported
+    ? "Browser ini tidak mendukung akses kamera. Silakan gunakan galeri."
+    : null);
 
   return createPortal(
     <div
@@ -459,11 +455,7 @@ export function CameraScreen({
                   alt=""
                   aria-hidden="true"
                   draggable={false}
-                  onError={() =>
-                    setError(
-                      `Gambar bingkai tidak ditemukan: ${previewFrame.src}. Pastikan folder public/frames ikut ter-copy, lalu restart npm run dev.`,
-                    )
-                  }
+                  onError={() => setError(`Gambar bingkai tidak ditemukan: ${previewFrame.src}. Pastikan folder public/frames ikut ter-copy, lalu restart npm run dev.`)}
                   className="pointer-events-none absolute inset-0 h-full w-full select-none"
                 />
               )}
