@@ -14,12 +14,15 @@ import {
   Download,
   AlertCircle,
   Plus,
+  Smile,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { readPhotoboothState, usePhotobooth } from "@/lib/photobooth-context";
 import { useRouter } from "next/navigation";
 import { FRAME_OPTIONS, getFrameById, type FrameOption } from "@/lib/frames";
 import { renderPhotobooth } from "@/lib/canvas";
+import { StickerLayer, StickerPanel } from "@/components/StickerEditor";
+import { haptic } from "@/lib/haptics";
 
 /** Width of the stored preview PNG (the export is rendered bigger). */
 const PREVIEW_WIDTH = 600;
@@ -45,6 +48,8 @@ export function FrameSelector({ embedded = false }: { embedded?: boolean }) {
   const router = useRouter();
 
   const [isRendering, setIsRendering] = useState(false);
+  const [editMode, setEditMode] = useState<"foto" | "stiker">("foto");
+  const [selectedSticker, setSelectedSticker] = useState<string | null>(null);
   const [imgSizes, setImgSizes] = useState<
     Record<number, { w: number; h: number }>
   >({});
@@ -146,6 +151,7 @@ export function FrameSelector({ embedded = false }: { embedded?: boolean }) {
         zoom: s.zoom,
         offsetX: s.offsetX,
         offsetY: s.offsetY,
+        stickers: s.stickers,
       });
       setFramedImage(canvas.toDataURL("image/png"));
     } catch (err) {
@@ -198,6 +204,9 @@ export function FrameSelector({ embedded = false }: { embedded?: boolean }) {
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!frame) return;
+    // Tapping empty space deselects a sticker; photo panning only in "Foto" mode.
+    setSelectedSticker(null);
+    if (editMode !== "foto") return;
     const s = readPhotoboothState();
     dragRef.current = {
       px: e.clientX,
@@ -416,7 +425,7 @@ export function FrameSelector({ embedded = false }: { embedded?: boolean }) {
             <h3 className="text-base font-bold text-ink">Atur Foto</h3>
           </div>
           <p className="mb-3 pl-10 text-[11px] text-muted">
-            Geser foto untuk mengatur bagian yang masuk bingkai
+            Geser foto untuk mengatur bagian yang masuk bingkai, lalu tambah stiker biar makin seru
           </p>
 
           <div
@@ -425,7 +434,9 @@ export function FrameSelector({ embedded = false }: { embedded?: boolean }) {
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
             onPointerCancel={onPointerUp}
-            className="relative mx-auto w-full max-w-[360px] cursor-grab touch-none select-none overflow-hidden rounded-[18px] bg-white shadow-inner ring-1 ring-black/5 active:cursor-grabbing"
+            className={`relative mx-auto w-full max-w-[420px] touch-none select-none overflow-hidden rounded-[18px] bg-white shadow-inner ring-1 ring-black/5 ${
+              editMode === "foto" ? "cursor-grab active:cursor-grabbing" : ""
+            }`}
             style={{ aspectRatio: `${frame.width} / ${frame.height}` }}
           >
             {frame.bleed && (
@@ -498,6 +509,43 @@ export function FrameSelector({ embedded = false }: { embedded?: boolean }) {
               draggable={false}
               className="pointer-events-none absolute inset-0 h-full w-full select-none"
             />
+            <StickerLayer
+              boxRef={boxRef}
+              selectedId={selectedSticker}
+              onSelect={(id) => {
+                setSelectedSticker(id);
+                if (id) setEditMode("stiker");
+              }}
+            />
+          </div>
+
+          {/* Mode switch */}
+          <div className="mt-4 grid grid-cols-2 gap-1 rounded-2xl bg-navy-50 p-1">
+            {(
+              [
+                { key: "foto", label: "Atur Foto", icon: <ImageIcon className="h-4 w-4" /> },
+                { key: "stiker", label: "Stiker & Aksesori", icon: <Smile className="h-4 w-4" /> },
+              ] as const
+            ).map((tab) => (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() => {
+                  haptic("tap");
+                  setEditMode(tab.key);
+                  if (tab.key === "foto") setSelectedSticker(null);
+                }}
+                aria-pressed={editMode === tab.key}
+                className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs font-bold transition active:scale-95 ${
+                  editMode === tab.key
+                    ? "bg-white text-navy-700 shadow-sm"
+                    : "text-muted"
+                }`}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
+            ))}
           </div>
 
           {missingPhotos > 0 && (
@@ -540,6 +588,17 @@ export function FrameSelector({ embedded = false }: { embedded?: boolean }) {
             </div>
           )}
 
+          {editMode === "stiker" && (
+            <div className="mt-4 animate-fade-up">
+              <StickerPanel
+                selectedId={selectedSticker}
+                onSelect={setSelectedSticker}
+              />
+            </div>
+          )}
+
+          {editMode === "foto" && (
+          <>
           {/* Zoom */}
           <div className="mt-4 flex items-center gap-3">
             <ZoomOut className="h-4 w-4 shrink-0 text-orange-500" />
@@ -578,6 +637,8 @@ export function FrameSelector({ embedded = false }: { embedded?: boolean }) {
               <RotateCcw className="h-3.5 w-3.5" /> Reset
             </Button>
           </div>
+          </>
+          )}
 
           <div className={embedded ? "mt-4" : "mt-4 grid grid-cols-2 gap-2"}>
             {!embedded && (
@@ -602,6 +663,7 @@ export function FrameSelector({ embedded = false }: { embedded?: boolean }) {
                   clearTimeout(renderTimer.current);
                   renderTimer.current = null;
                 }
+                haptic("success");
                 await renderNow();
                 setStep("export");
                 router.push("/export");

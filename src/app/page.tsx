@@ -1,6 +1,6 @@
 "use client";
 
-import { Sparkles, Camera, Image as ImageIcon, AlertCircle, Wand2 } from "lucide-react";
+import { Sparkles, Camera, AlertCircle, Smile, Film, QrCode } from "lucide-react";
 import { PhotoUploader } from "@/components/PhotoUploader";
 import { HistorySection } from "@/components/HistorySection";
 import { PhotoboothShell } from "@/components/PhotoboothShell";
@@ -13,34 +13,48 @@ export default function UploadPage() {
     <PhotoboothShell step="upload" title="Mulai" showBack={false}>
       <div className="space-y-4">
         {/* Hero */}
-        <section className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-navy-900 via-navy-800 to-navy-600 p-5 text-white shadow-float animate-pop sm:rounded-[32px] sm:p-7">
-          <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-orange-400/25 blur-2xl" />
-          <div className="absolute -bottom-12 -left-8 h-36 w-36 rounded-full bg-orange-300/30 blur-2xl" />
+        <section className="relative overflow-hidden rounded-[30px] bg-navy-700 p-5 pb-6 text-white shadow-float animate-pop sm:p-7">
+          <div className="polka absolute inset-0" />
+          <div className="absolute -right-12 -top-12 h-44 w-44 rounded-full bg-orange-400/30 blur-2xl" />
+          <div className="absolute -bottom-14 -left-10 h-40 w-40 rounded-full bg-orange-600/35 blur-2xl" />
+
+          {/* Floating stars */}
+          <span className="star-shape animate-twinkle absolute right-6 top-5 h-7 w-7 bg-orange-400" />
+          <span className="star-shape animate-twinkle absolute right-16 top-14 h-4 w-4 bg-white [animation-delay:0.6s]" />
+          <span className="star-shape animate-wiggle absolute bottom-5 right-7 h-9 w-9 bg-orange-600 ring-2 ring-white" />
 
           <div className="relative">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-[11px] font-bold uppercase tracking-wider backdrop-blur">
-              <Sparkles className="w-3.5 h-3.5" /> Studio Photobooth
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-navy-700">
+              <Sparkles className="h-3.5 w-3.5 text-orange-600" /> Lensa Abadi
             </span>
-            <h2 className="mt-3 text-[22px] font-extrabold leading-tight tracking-tight sm:mt-4 sm:text-[26px]">
-              Ciptakan momen <br />
-              <span className="text-white drop-shadow">photobooth</span> yang
-              tak terlupakan
+            <h2 className="font-display title-sticker mt-4 text-[40px] leading-[0.95] sm:text-5xl">
+              TRIBIZ
+              <br />
+              FEST <span className="text-orange-300">2026</span>
             </h2>
-            <p className="mt-2 max-w-xs text-[13px] leading-relaxed text-white/85 sm:text-sm">
-              Ambil foto langsung dari kamera atau pilih dari galeri, lalu lihat
-              hasilnya di dalam bingkai.
+            <p className="mt-3 inline-block rounded-lg bg-orange-600 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wide text-white shadow-md">
+              Every tradition tells a story
+            </p>
+            <p className="mt-3 max-w-[17rem] text-[13px] leading-relaxed text-white/85">
+              Foto berurutan, pilih bingkai, tempel stiker &amp; aksesori, lalu
+              unduh atau bagikan lewat QR.
             </p>
 
-            <div className="mt-4 hidden flex-wrap gap-2 sm:flex">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-xs font-semibold backdrop-blur">
-                <ImageIcon className="w-3.5 h-3.5" /> Galeri HP
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-xs font-semibold backdrop-blur">
-                <Camera className="w-3.5 h-3.5" /> Kamera Langsung
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-xs font-semibold backdrop-blur">
-                <Wand2 className="w-3.5 h-3.5" /> Bingkai Keren
-              </span>
+            <div className="mt-4 flex flex-wrap gap-1.5">
+              {[
+                { icon: <Camera className="h-3.5 w-3.5" />, label: "Foto berurutan" },
+                { icon: <Smile className="h-3.5 w-3.5" />, label: "20 aksesori" },
+                { icon: <Film className="h-3.5 w-3.5" />, label: "Video proses" },
+                { icon: <QrCode className="h-3.5 w-3.5" />, label: "Scan QR" },
+              ].map((chip) => (
+                <span
+                  key={chip.label}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-[11px] font-bold backdrop-blur"
+                >
+                  {chip.icon}
+                  {chip.label}
+                </span>
+              ))}
             </div>
           </div>
         </section>

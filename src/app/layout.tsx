@@ -1,10 +1,16 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Lilita_One } from "next/font/google";
 import "./globals.css";
 import { PhotoboothProvider } from "@/lib/photobooth-context";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const lilita = Lilita_One({
+  variable: "--font-lilita",
+  weight: "400",
   subsets: ["latin"],
 });
 
@@ -14,13 +20,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Photobooth — Studio Momen Aesthetic",
+  title: "Photobooth — Tribiz Fest 2026",
   description:
-    "Buat foto photobooth aesthetic langsung dari HP. Unggah atau ambil foto, pilih bingkai, dan unduh hasilnya.",
+    "Photobooth Tribiz Fest 2026 langsung dari HP: foto berurutan, bingkai seru, 20 stiker & aksesori, lalu unduh atau scan QR.",
+  appleWebApp: { capable: true, title: "Photobooth", statusBarStyle: "black-translucent" },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#fffbf5",
+  themeColor: "#1f2077",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -35,7 +42,7 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${lilita.variable} h-full antialiased`}
     >
       <body className="min-h-full font-sans">
         <PhotoboothProvider>{children}</PhotoboothProvider>

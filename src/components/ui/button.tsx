@@ -3,6 +3,7 @@
 import * as React from "react";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { haptic } from "@/lib/haptics";
 
 function cn(...inputs: unknown[]) {
   return twMerge(clsx(inputs));
@@ -18,7 +19,7 @@ const variants: Record<Variant, string> = {
   primary:
     "bg-gradient-to-br from-navy-700 via-navy-600 to-navy-500 text-white shadow-lg shadow-navy-800/30 hover:shadow-xl hover:shadow-navy-800/40 hover:brightness-[1.04]",
   accent:
-    "bg-gradient-to-br from-orange-500 via-orange-600 to-orange-700 text-white shadow-lg shadow-orange-600/30 hover:shadow-xl hover:shadow-orange-600/40 hover:brightness-[1.04]",
+    "bg-gradient-to-br from-orange-500 via-orange-600 to-orange-700 text-white shadow-lg shadow-orange-600/30 ring-1 ring-inset ring-white/20 hover:shadow-xl hover:shadow-orange-600/40 hover:brightness-[1.04]",
   secondary:
     "bg-ink text-white shadow-md shadow-ink/20 hover:bg-ink/90",
   outline:
@@ -48,6 +49,7 @@ const Button: React.FC<ButtonProps> = ({
   size = "md",
   disabled = false,
   type = "button",
+  onClick,
   ...props
 }) => {
   return (
@@ -55,6 +57,10 @@ const Button: React.FC<ButtonProps> = ({
       type={type}
       className={cn(base, variants[variant], sizes[size], className)}
       disabled={disabled}
+      onClick={(e) => {
+        haptic("tap");
+        onClick?.(e);
+      }}
       {...props}
     />
   );

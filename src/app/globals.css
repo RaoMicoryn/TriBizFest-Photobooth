@@ -12,35 +12,48 @@
   --color-line: #e4e7ec;
   --color-surface: #ffffff;
 
-  /* Market palette: navy/blue primary, orange accent, cream/white surface. */
-  --color-navy-50: #f4f7fb;
-  --color-navy-100: #e4ecf6;
-  --color-navy-200: #c6d6e9;
-  --color-navy-300: #9bb5d3;
-  --color-navy-400: #5e86b4;
-  --color-navy-500: #2f5c93;
-  --color-navy-600: #1c4374;
-  --color-navy-700: #123257;
-  --color-navy-800: #0b2545;
-  --color-navy-900: #071a33;
-  --color-cream: #fffbf5;
+  /* Tribiz Fest palette: indigo (navy-*), red + gold (orange-*), cream. */
+  --color-navy-50: #f3f3fb;
+  --color-navy-100: #e5e6f7;
+  --color-navy-200: #c9cbee;
+  --color-navy-300: #a0a4de;
+  --color-navy-400: #6b70c4;
+  --color-navy-500: #3d3fa0;
+  --color-navy-600: #2c2d8a;
+  --color-navy-700: #1f2077;
+  --color-navy-800: #171860;
+  --color-navy-900: #0f1040;
+  --color-cream: #fffdf0;
 
-  --color-brand: #1c4374;
-  --color-brand-600: #1c4374;
-  --color-brand-500: #2f5c93;
-  --color-brand-soft: #f4f7fb;
-  --color-brand-tint: #e4ecf6;
+  /* "orange" now runs gold -> Tribiz red, so every accent turns festival red. */
+  --color-orange-50: #fff8e6;
+  --color-orange-100: #ffeec2;
+  --color-orange-200: #ffdd8a;
+  --color-orange-300: #ffc74a;
+  --color-orange-400: #fba81d;
+  --color-orange-500: #e0300f;
+  --color-orange-600: #c10000;
+  --color-orange-700: #9a0000;
+  --color-orange-800: #7a0000;
+  --color-orange-900: #5c0000;
 
-  --color-accent: #c2410c;
-  --color-sun: #ea580c;
+  --color-brand: #1f2077;
+  --color-brand-600: #1f2077;
+  --color-brand-500: #3d3fa0;
+  --color-brand-soft: #f3f3fb;
+  --color-brand-tint: #e5e6f7;
 
+  --color-accent: #c10000;
+  --color-sun: #fb9b00;
+
+  --font-display: var(--font-lilita), var(--font-geist-sans), system-ui, sans-serif;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 :root {
   color-scheme: light;
-  --background: #fffbf5;
+  --background: #fffdf0;
   --foreground: #101828;
 }
 
@@ -57,9 +70,11 @@ html {
 body {
   background-color: var(--background);
   background-image:
-    radial-gradient(52rem 34rem at 108% -8%, rgba(194, 65, 12, 0.09), transparent 62%),
-    radial-gradient(46rem 30rem at -12% 2%, rgba(11, 37, 69, 0.07), transparent 58%),
-    radial-gradient(40rem 30rem at 50% 120%, rgba(234, 88, 12, 0.06), transparent 60%);
+    radial-gradient(rgba(31, 32, 119, 0.07) 1.4px, transparent 1.6px),
+    radial-gradient(46rem 30rem at 105% -6%, rgba(251, 155, 0, 0.16), transparent 60%),
+    radial-gradient(42rem 28rem at -10% 4%, rgba(31, 32, 119, 0.10), transparent 58%),
+    radial-gradient(40rem 28rem at 50% 118%, rgba(193, 0, 0, 0.08), transparent 60%);
+  background-size: 22px 22px, auto, auto, auto;
   background-attachment: fixed;
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
@@ -109,13 +124,13 @@ img {
 
 .shadow-soft {
   box-shadow:
-    0 1px 2px rgba(11, 37, 69, 0.04),
-    0 12px 40px -18px rgba(11, 37, 69, 0.22);
+    0 1px 2px rgba(31, 32, 119, 0.05),
+    0 12px 40px -18px rgba(31, 32, 119, 0.22);
 }
 .shadow-float {
   box-shadow:
-    0 2px 6px rgba(11, 37, 69, 0.05),
-    0 24px 60px -20px rgba(11, 37, 69, 0.28);
+    0 2px 6px rgba(31, 32, 119, 0.06),
+    0 24px 60px -20px rgba(31, 32, 119, 0.30);
 }
 
 /* ---------- Animations ---------- */
@@ -199,12 +214,12 @@ img {
 /* ---------- Focus ring ---------- */
 .focus-brand:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 4px rgba(194, 65, 12, 0.2);
+  box-shadow: 0 0 0 4px rgba(193, 0, 0, 0.22);
 }
 
 /* ---------- Text gradient ---------- */
 .text-gradient {
-  background: linear-gradient(120deg, #0b2545 0%, #2f5c93 45%, #c2410c 100%);
+  background: linear-gradient(120deg, #1f2077 0%, #c10000 55%, #fb9b00 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -215,6 +230,76 @@ input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+/* ---------- Tribiz Fest flavour ---------- */
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+/* Chunky "sticker" lettering: white title with a red outline + hard shadow. */
+.title-sticker {
+  color: #fff;
+  -webkit-text-stroke: 0;
+  text-shadow:
+    -3px -3px 0 #c10000, 3px -3px 0 #c10000, -3px 3px 0 #c10000, 3px 3px 0 #c10000,
+    0 -3px 0 #c10000, 0 3px 0 #c10000, -3px 0 0 #c10000, 3px 0 0 #c10000,
+    0 6px 0 #7a0000;
+}
+
+/* Polka-dot texture for hero cards. */
+.polka {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.14) 2.2px, transparent 2.6px);
+  background-size: 18px 18px;
+}
+
+/* Stamp-like perforated edge (matches the frame artwork). */
+.stamp-edge {
+  --r: 7px;
+  --s: 22px;
+  -webkit-mask:
+    radial-gradient(circle var(--r) at 50% 0, transparent 98%, #000) top / var(--s) 51% repeat-x,
+    radial-gradient(circle var(--r) at 50% 100%, transparent 98%, #000) bottom / var(--s) 51% repeat-x,
+    radial-gradient(circle var(--r) at 0 50%, transparent 98%, #000) left / 51% var(--s) repeat-y,
+    radial-gradient(circle var(--r) at 100% 50%, transparent 98%, #000) right / 51% var(--s) repeat-y;
+  -webkit-mask-composite: source-in;
+  mask:
+    radial-gradient(circle var(--r) at 50% 0, #0000 98%, #000) top / var(--s) 51% repeat-x intersect,
+    radial-gradient(circle var(--r) at 50% 100%, #0000 98%, #000) bottom / var(--s) 51% repeat-x intersect,
+    radial-gradient(circle var(--r) at 0 50%, #0000 98%, #000) left / 51% var(--s) repeat-y intersect,
+    radial-gradient(circle var(--r) at 100% 50%, #0000 98%, #000) right / 51% var(--s) repeat-y intersect;
+}
+
+.star-shape {
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-4deg); }
+  50% { transform: rotate(4deg); }
+}
+@keyframes twinkle {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  50% { transform: scale(0.7) rotate(25deg); opacity: 0.7; }
+}
+@keyframes ring-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(193, 0, 0, 0.45); }
+  100% { box-shadow: 0 0 0 18px rgba(193, 0, 0, 0); }
+}
+.animate-wiggle { animation: wiggle 2.6s ease-in-out infinite; }
+.animate-twinkle { animation: twinkle 2.2s ease-in-out infinite; }
+.animate-ring-pulse { animation: ring-pulse 1.8s ease-out infinite; }
+
+/* Smoother taps on touch devices */
+button, a, [role="button"] {
+  -webkit-user-select: none;
+  user-select: none;
+}
+input[type="range"] {
+  touch-action: pan-y;
+  height: 1.75rem;
 }
 
 /* ---------- Reduced motion ---------- */

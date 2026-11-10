@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/components/ui/button";
 import { usePhotobooth } from "@/lib/photobooth-context";
+import { haptic } from "@/lib/haptics";
 
 export type StepKey = "upload" | "frame" | "export";
 
@@ -86,10 +87,10 @@ export function PhotoboothShell({
             ) : null}
 
             <div className="flex flex-1 items-center gap-2">
-              <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-navy-600 to-navy-500 text-white shadow-md shadow-navy-500/30">
-                <Sparkles className="w-[18px] h-[18px]" />
+              <span className="grid h-10 w-10 -rotate-3 place-items-center rounded-xl bg-orange-600 text-white shadow-md shadow-orange-700/30 ring-2 ring-white">
+                <Sparkles className="h-[18px] w-[18px]" />
               </span>
-              <span className="text-[15px] font-extrabold tracking-tight text-ink">
+              <span className="font-display text-xl leading-none tracking-wide text-navy-700">
                 Photobooth
               </span>
             </div>
@@ -106,7 +107,7 @@ export function PhotoboothShell({
                 <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-600">
                   Langkah {currentIndex + 1} dari {ORDER.length}
                 </p>
-                <h1 className="mt-0.5 text-2xl font-extrabold tracking-tight text-ink">
+                <h1 className="mt-0.5 font-display text-[26px] leading-tight tracking-wide text-navy-700">
                   {title ?? (currentStep === "upload" ? "Mulai" : currentMeta.label)}
                 </h1>
               </div>
@@ -154,6 +155,7 @@ export function PhotoboothShell({
                 type="button"
                 disabled={disabled}
                 onClick={() => {
+                  haptic("tap");
                   if (onStepClick?.(s.key)) return;
                   if (!active) router.push(s.path);
                 }}

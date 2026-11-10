@@ -1,5 +1,6 @@
 import type { Fit } from "@/lib/photobooth-context";
 import type { PhotoWindow } from "@/lib/frames";
+import { getSticker, stickerSrc, type PlacedSticker } from "@/lib/stickers";
 
 /**
  * Canvas utilities for rendering the photobooth composition.
@@ -108,6 +109,13 @@ export interface RenderPhotoboothOptions {
   /** Pan offset as a fraction of each window's size. */
   offsetX?: number;
   offsetY?: number;
+  /** Stickers drawn on top of the frame. */
+  stickers?: PlacedSticker[];
+  /**
+   * Only fill the first N windows (used by the process video to show the
+   * frame filling up). Defaults to all windows.
+   */
+  photoCount?: number;
 }
 
 /**
@@ -128,7 +136,10 @@ export async function renderPhotobooth(
     zoom = 1,
     offsetX = 0,
     offsetY = 0,
+    stickers = [],
+    photoCount,
   } = opts;
+  const activeWindows = windows.slice(0, photoCount ?? windows.length);
 
   if (!userImages.length) {
     throw new Error("Belum ada foto untuk dirender.");
@@ -150,7 +161,7 @@ export async function renderPhotobooth(
 
   // Bleed frames: cover the whole artwork with the first photo so the
   // transparent holes in the lettering show the photo, not white.
-  if (bleed) {
+  if (bleed && activeWindows.length > 0) {
     const img = photoImgs[0];
     const scale =
       Math.max(frameWidth / img.width, frameHeight / img.height) * zoom;
@@ -172,7 +183,7 @@ export async function renderPhotobooth(
   const lctx = layer.getContext("2d");
   if (!lctx) throw new Error("Canvas tidak didukung oleh browser ini.");
 
-  windows.forEach((win, index) => {
+  activeWindows.forEach((win, index) => {
     const img = photoImgs[index] ?? photoImgs[photoImgs.length - 1];
     const bx = win.x * frameWidth;
     const by = win.y * frameHeight;
@@ -204,6 +215,36 @@ export async function renderPhotobooth(
 
   ctx.drawImage(layer, 0, 0);
   ctx.drawImage(frameImg, 0, 0, frameWidth, frameHeight);
+
+  // Stickers / accessories sit on top of everything.
+  if (stickers.length) {
+    const ids = Array.from(new Set(stickers.map((st) => st.stickerId)));
+    const loaded = new Map<string, HTMLImageElement>();
+    await Promise.all(
+      ids.map(async (id) => {
+        const def = getSticker(id);
+        if (!def) return;
+        try {
+          loaded.set(id, await loadImage(stickerSrc(def)));
+        } catch {
+          /* skip a sticker that fails to load */
+        }
+      }),
+    );
+    for (const st of stickers) {
+      const def = getSticker(st.stickerId);
+      const img = loaded.get(st.stickerId);
+      if (!def || !img) continue;
+      const w = st.size * frameWidth;
+      const h = (w * def.h) / def.w;
+      ctx.save();
+      ctx.translate(st.x * frameWidth, st.y * frameHeight);
+      ctx.rotate((st.rotation * Math.PI) / 180);
+      if (st.flip) ctx.scale(-1, 1);
+      ctx.drawImage(img, -w / 2, -h / 2, w, h);
+      ctx.restore();
+    }
+  }
 
   return canvas;
 }

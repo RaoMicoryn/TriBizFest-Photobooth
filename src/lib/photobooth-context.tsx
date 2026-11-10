@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { FRAME_OPTIONS, MAX_FRAME_PHOTOS } from "@/lib/frames";
+import { getSticker, type PlacedSticker } from "@/lib/stickers";
 
 export type Fit = "cover" | "contain";
 export type Step = "upload" | "frame" | "export";
@@ -22,6 +23,8 @@ export interface PhotoboothState {
   offsetY: number;
   selectedFrameId: string | null;
   framedImage: string | null;
+  /** Stickers / accessories placed on the framed result. */
+  stickers: PlacedSticker[];
   error: string | null;
 }
 
@@ -35,6 +38,7 @@ const INITIAL_STATE: PhotoboothState = {
   offsetY: 0,
   selectedFrameId: null,
   framedImage: null,
+  stickers: [],
   error: null,
 };
 
@@ -47,8 +51,9 @@ function readFromStorage(): PhotoboothState {
     if (!raw) return INITIAL_STATE;
     const parsed = JSON.parse(raw) as Omit<
       Partial<PhotoboothState>,
-      "step" | "userImages"
+      "step" | "userImages" | "stickers"
     > & {
+      stickers?: PlacedSticker[];
       step?: string;
       userImages?: unknown;
       /** Legacy single-photo saves. */
@@ -79,9 +84,24 @@ function readFromStorage(): PhotoboothState {
         ? parsed.selectedFrameId
         : null;
 
+    const stickers: PlacedSticker[] = Array.isArray(parsed.stickers)
+      ? parsed.stickers.filter(
+          (st): st is PlacedSticker =>
+            !!st &&
+            typeof st.id === "string" &&
+            typeof st.stickerId === "string" &&
+            !!getSticker(st.stickerId) &&
+            Number.isFinite(st.x) &&
+            Number.isFinite(st.y) &&
+            Number.isFinite(st.size) &&
+            Number.isFinite(st.rotation),
+        )
+      : [];
+
     return {
       ...INITIAL_STATE,
       ...parsed,
+      stickers,
       userImages: userImages.slice(0, MAX_PHOTOS),
       selectedFrameId,
       framedImage: selectedFrameId ? (parsed.framedImage ?? null) : null,
@@ -189,6 +209,7 @@ export const photoboothActions = {
       userImages: [],
       framedImage: null,
       selectedFrameId: null,
+      stickers: [],
       zoom: 1,
       offsetX: 0,
       offsetY: 0,
@@ -224,6 +245,67 @@ export const photoboothActions = {
   },
   setFramedImage(dataUrl: string | null) {
     update((s) => ({ ...s, framedImage: dataUrl }));
+  },
+  addSticker(stickerId: string): string {
+    const def = getSticker(stickerId);
+    const id = `st_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+    if (!def) return id;
+    update((s) => ({
+      ...s,
+      stickers: [
+        ...s.stickers,
+        {
+          id,
+          stickerId,
+          x: 0.5 + (Math.random() - 0.5) * 0.12,
+          y: 0.5 + (Math.random() - 0.5) * 0.12,
+          size: def.size,
+          rotation: 0,
+          flip: false,
+        },
+      ].slice(-40),
+    }));
+    return id;
+  },
+  duplicateSticker(id: string): string | null {
+    const src = state.stickers.find((st) => st.id === id);
+    if (!src) return null;
+    const newId = `st_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+    update((s) => ({
+      ...s,
+      stickers: [
+        ...s.stickers,
+        {
+          ...src,
+          id: newId,
+          x: Math.min(0.95, src.x + 0.06),
+          y: Math.min(0.95, src.y + 0.06),
+        },
+      ].slice(-40),
+    }));
+    return newId;
+  },
+  updateSticker(id: string, patch: Partial<Omit<PlacedSticker, "id" | "stickerId">>) {
+    update((s) => ({
+      ...s,
+      stickers: s.stickers.map((st) => (st.id === id ? { ...st, ...patch } : st)),
+    }));
+  },
+  bringStickerToFront(id: string) {
+    update((s) => {
+      const target = s.stickers.find((st) => st.id === id);
+      if (!target) return s;
+      return {
+        ...s,
+        stickers: [...s.stickers.filter((st) => st.id !== id), target],
+      };
+    });
+  },
+  removeSticker(id: string) {
+    update((s) => ({ ...s, stickers: s.stickers.filter((st) => st.id !== id) }));
+  },
+  clearStickers() {
+    update((s) => ({ ...s, stickers: [] }));
   },
   setError(msg: string | null) {
     update((s) => ({ ...s, error: msg }));
