@@ -299,7 +299,7 @@ export function FrameSelector({ embedded = false }: { embedded?: boolean }) {
           </span>
         </div>
 
-        <div className="space-y-2.5">
+        <div className="grid gap-2.5 lg:grid-cols-2">
           {FRAME_OPTIONS.map((option, idx) => {
             const isSelected = selectedFrameId === option.id;
             return (
