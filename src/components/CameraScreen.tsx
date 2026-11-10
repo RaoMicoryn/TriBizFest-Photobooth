@@ -328,18 +328,24 @@ export function CameraScreen({
       role="dialog"
       aria-modal="true"
       aria-label="Kamera"
-      className={`fixed inset-0 z-[60] flex flex-col overflow-hidden bg-neutral-950 text-white ${
+      className={`fixed inset-0 z-[60] flex flex-col overflow-hidden bg-navy-950 text-white ${
         closing ? "animate-cam-out" : "animate-cam-in"
       }`}
       style={{ height: "100dvh" }}
     >
+      {/* Cinematic scrims so controls stay readable over any photo */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/80 via-black/30 to-transparent"
+      />
+
       {/* Top bar */}
       <div className="relative z-10 flex items-center justify-between gap-3 px-4 pb-2 pt-[max(env(safe-area-inset-top),0.75rem)]">
         <button
           type="button"
           onClick={handleClose}
           aria-label="Tutup kamera"
-          className="grid h-11 w-11 place-items-center rounded-full bg-white/15 backdrop-blur transition active:scale-90"
+          className="cam-pill grid h-11 w-11 place-items-center rounded-full text-white transition active:scale-90"
         >
           <X className="h-5 w-5" />
         </button>
@@ -348,10 +354,11 @@ export function CameraScreen({
           type="button"
           onClick={() => setSheetOpen(true)}
           disabled={!previewFrame || sequenceStarted}
-          className="flex min-w-0 max-w-[58%] items-center gap-1.5 rounded-full bg-white/15 px-3.5 py-2 text-xs font-bold backdrop-blur transition active:scale-95 disabled:opacity-0"
+          className="cam-pill flex min-w-0 max-w-[58%] items-center gap-1.5 rounded-full px-3.5 py-2 text-[11px] font-bold text-white transition active:scale-95 disabled:opacity-0"
         >
+          <Frame className="h-3.5 w-3.5 shrink-0 text-gold" />
           <span className="truncate">{previewFrame?.name ?? "Bingkai"}</span>
-          <ChevronDown className="h-3.5 w-3.5 shrink-0" />
+          <ChevronDown className="h-3.5 w-3.5 shrink-0 opacity-70" />
         </button>
 
         <button
@@ -360,8 +367,8 @@ export function CameraScreen({
           disabled={!!captured}
           aria-pressed={mirror}
           aria-label="Balik cermin"
-          className={`grid h-11 w-11 place-items-center rounded-full backdrop-blur transition active:scale-90 disabled:opacity-0 ${
-            mirror ? "bg-white text-neutral-900" : "bg-white/15"
+          className={`grid h-11 w-11 place-items-center rounded-full transition active:scale-90 disabled:opacity-0 ${
+            mirror ? "bg-cream text-navy-900 shadow-lg" : "cam-pill text-white"
           }`}
         >
           <FlipHorizontal2 className="h-5 w-5" />
@@ -371,30 +378,33 @@ export function CameraScreen({
       {/* Progress for multi-photo frames */}
       {totalShots > 1 && (
         <div className="relative z-10 flex items-center justify-center gap-3 px-4 pb-1">
+          <span className="font-mono text-[9px] font-bold tracking-[0.18em] text-cream/60">
+            FRAME
+          </span>
           <div className="flex items-center gap-1.5" aria-hidden="true">
             {Array.from({ length: totalShots }).map((_, i) => (
               <span
                 key={i}
                 className={`h-2 rounded-full transition-all ${
                   i < currentShot
-                    ? "w-2 bg-orange-400"
+                    ? "w-2 bg-gold"
                     : i === currentShot
                       ? "w-6 bg-white"
-                      : "w-2 bg-white/30"
+                      : "w-2 bg-white/25"
                 }`}
               />
             ))}
           </div>
-          <span className="text-xs font-bold text-white/90">
-            Foto {currentShot + 1} dari {totalShots}
+          <span className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-white/85">
+            Foto {currentShot + 1} / {totalShots}
           </span>
           {shots.length > 0 && !captured && (
             <button
               type="button"
               onClick={undoLastShot}
-              className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-bold backdrop-blur transition active:scale-95"
+              className="cam-pill inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold text-white transition active:scale-95"
             >
-              <RotateCcw className="h-3 w-3" /> Foto {currentShot}
+              <RotateCcw className="h-3 w-3" /> Ulang
             </button>
           )}
         </div>
@@ -406,7 +416,7 @@ export function CameraScreen({
           {box.w > 0 && (
             <div
               key={captured ? "review" : "live"}
-              className={`relative overflow-hidden rounded-[22px] bg-white shadow-2xl ring-1 ring-white/10 ${
+              className={`relative overflow-hidden rounded-[20px] bg-white shadow-[0_40px_90px_-30px_rgba(0,0,0,0.9)] ring-1 ring-white/20 ${
                 captured ? "animate-pop" : ""
               }`}
               style={{ width: box.w, height: box.h }}
@@ -470,9 +480,12 @@ export function CameraScreen({
                         )
                       )
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center bg-neutral-800 text-neutral-500">
-                        <span className="text-2xl font-extrabold">
-                          {index + 1}
+                      <div className="flex h-full w-full flex-col items-center justify-center gap-0.5 bg-gradient-to-b from-navy-900 to-black text-white/40">
+                        <span className="font-display text-[26px] leading-none">
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
+                        <span className="text-[8.5px] font-extrabold uppercase tracking-[0.22em]">
+                          Menunggu
                         </span>
                       </div>
                     )}
@@ -535,82 +548,91 @@ export function CameraScreen({
       </div>
 
       {/* Bottom controls */}
-      <div className="relative z-10 px-4 pb-[max(env(safe-area-inset-bottom),1rem)] pt-2">
-        {captured ? (
-          <div className="animate-slide-up-soft grid grid-cols-2 gap-3 pb-1 pt-3">
-            <Button
-              variant="outline"
-              size="lg"
-              className="border-white/25 bg-white/10 text-white hover:bg-white/20"
-              onClick={() => setCaptured(null)}
-            >
-              <RotateCcw className="h-4 w-4" /> Ulangi
-            </Button>
-            <Button variant="accent" size="lg" onClick={acceptShot}>
-              <Check className="h-5 w-5" />
-              {isLastShot ? "Pakai Foto" : `Lanjut Foto ${currentShot + 2}`}
-            </Button>
-          </div>
-        ) : (
-          <>
-            {/* Filters */}
-            <div className="no-scrollbar -mx-4 mb-3 flex gap-2 overflow-x-auto px-4">
-              {PHOTO_FILTERS.map((f) => {
-                const active = f.id === filterId;
-                return (
-                  <button
-                    key={f.id}
-                    type="button"
-                    onClick={() => setFilterId(f.id)}
-                    aria-pressed={active}
-                    className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-bold transition active:scale-95 ${
-                      active
-                        ? "animate-chip-pop bg-white text-neutral-900"
-                        : "bg-white/15 text-white/90"
-                    }`}
-                  >
-                    {f.name}
-                  </button>
-                );
-              })}
+      <div className="relative z-10 px-3 pb-[max(env(safe-area-inset-bottom),0.75rem)] pt-2">
+        <div className="rounded-[26px] border border-white/70 bg-cream/97 p-3 shadow-[0_-18px_50px_rgba(0,0,0,0.55)] backdrop-blur-xl">
+          {captured ? (
+            <div className="animate-slide-up-soft grid grid-cols-2 gap-2.5">
+              <Button
+                variant="outline"
+                size="lg"
+                className="border-ink/15 bg-white text-ink hover:bg-white"
+                onClick={() => setCaptured(null)}
+              >
+                <RotateCcw className="h-4 w-4" /> Ulangi
+              </Button>
+              <Button variant="accent" size="lg" onClick={acceptShot}>
+                <Check className="h-5 w-5" />
+                {isLastShot ? "Pakai Foto" : `Lanjut Foto ${currentShot + 2}`}
+              </Button>
             </div>
-
-            <div className="grid grid-cols-[1fr_auto_1fr] items-center">
-              <button
-                type="button"
-                onClick={() => setSheetOpen(true)}
-                disabled={!previewFrame || sequenceStarted}
-                className="flex w-16 flex-col items-center gap-1 justify-self-start disabled:opacity-40 text-[11px] font-semibold text-white/90 transition active:scale-90"
-              >
-                <span className="grid h-12 w-12 place-items-center rounded-full bg-white/15 backdrop-blur">
-                  <Frame className="h-5 w-5" />
+          ) : (
+            <>
+              <div className="mb-2 flex items-center justify-between gap-2 px-0.5">
+                <span className="label-sm text-muted">Filter</span>
+                <span className="font-mono text-[9px] tracking-[0.18em] text-muted">
+                  TRIBIZ · CAM
                 </span>
-                Bingkai
-              </button>
+              </div>
+              <div className="no-scrollbar -mx-1 mb-3 flex gap-1.5 overflow-x-auto px-1">
+                {PHOTO_FILTERS.map((f) => {
+                  const active = f.id === filterId;
+                  return (
+                    <button
+                      key={f.id}
+                      type="button"
+                      onClick={() => setFilterId(f.id)}
+                      aria-pressed={active}
+                      className={`shrink-0 rounded-full px-3.5 py-1.5 text-[11px] font-bold transition active:scale-95 ${
+                        active
+                          ? "animate-chip-pop bg-navy-800 text-cream shadow-sm"
+                          : "border border-ink/10 bg-white/80 text-ink-soft hover:border-orange-300"
+                      }`}
+                    >
+                      {f.name}
+                    </button>
+                  );
+                })}
+              </div>
 
-              <button
-                type="button"
-                onClick={capture}
-                disabled={!stream}
-                aria-label="Ambil foto"
-                className="group grid h-[78px] w-[78px] place-items-center rounded-full border-4 border-white p-1 transition active:scale-95 disabled:opacity-40"
-              >
-                <span className="block h-full w-full rounded-full bg-white transition duration-150 group-active:scale-90" />
-              </button>
+              <div className="grid grid-cols-[1fr_auto_1fr] items-center">
+                <button
+                  type="button"
+                  onClick={() => setSheetOpen(true)}
+                  disabled={!previewFrame || sequenceStarted}
+                  className="flex w-16 flex-col items-center gap-1 justify-self-start text-[9px] font-extrabold uppercase tracking-[0.12em] text-ink-soft transition active:scale-90 disabled:opacity-40"
+                >
+                  <span className="grid h-11 w-11 place-items-center rounded-full border border-ink/10 bg-white text-navy-800 shadow-sm">
+                    <Frame className="h-5 w-5" />
+                  </span>
+                  Bingkai
+                </button>
 
-              <button
-                type="button"
-                onClick={switchCamera}
-                className="flex w-16 flex-col items-center gap-1 justify-self-end text-[11px] font-semibold text-white/90 transition active:scale-90"
-              >
-                <span className="grid h-12 w-12 place-items-center rounded-full bg-white/15 backdrop-blur">
-                  <SwitchCamera className="h-5 w-5" />
-                </span>
-                Putar
-              </button>
-            </div>
-          </>
-        )}
+                <button
+                  type="button"
+                  onClick={capture}
+                  disabled={!stream}
+                  aria-label="Ambil foto"
+                  className="group grid h-[80px] w-[80px] place-items-center rounded-full bg-gradient-to-b from-orange-500 to-orange-700 p-[4px] shadow-[0_4px_0_#5c0716,0_14px_28px_-10px_rgba(200,16,46,0.7)] transition active:translate-y-[2px] active:shadow-[0_2px_0_#5c0716] disabled:opacity-40"
+                >
+                  <span className="grid h-full w-full place-items-center rounded-full bg-cream">
+                    <span className="block h-[58px] w-[58px] rounded-full bg-white ring-1 ring-navy-900/10 transition duration-150 group-active:scale-90" />
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={switchCamera}
+                  className="flex w-16 flex-col items-center gap-1 justify-self-end text-[9px] font-extrabold uppercase tracking-[0.12em] text-ink-soft transition active:scale-90"
+                >
+                  <span className="grid h-11 w-11 place-items-center rounded-full border border-ink/10 bg-white text-navy-800 shadow-sm">
+                    <SwitchCamera className="h-5 w-5" />
+                  </span>
+                  Putar
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       <FrameSheet

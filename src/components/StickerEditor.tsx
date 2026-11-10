@@ -219,25 +219,28 @@ export function StickerPanel({
 
   return (
     <div className="space-y-3">
-      <div className="no-scrollbar -mx-1 flex gap-1.5 overflow-x-auto px-1">
-        {STICKER_CATEGORIES.map((c) => (
-          <button
-            key={c.id}
-            type="button"
-            onClick={() => {
-              haptic("tap");
-              setCategory(c.id);
-            }}
-            aria-pressed={category === c.id}
-            className={`shrink-0 rounded-full px-3.5 py-2 text-xs font-bold transition active:scale-95 ${
-              category === c.id
-                ? "bg-navy-700 text-white shadow-md shadow-navy-700/25"
-                : "bg-navy-50 text-ink-soft"
-            }`}
-          >
-            {c.label}
-          </button>
-        ))}
+      <div className="no-scrollbar -mx-1 flex gap-1.5 overflow-x-auto px-1 pb-0.5">
+        {STICKER_CATEGORIES.map((c) => {
+          const active = category === c.id;
+          return (
+            <button
+              key={c.id}
+              type="button"
+              onClick={() => {
+                haptic("tap");
+                setCategory(c.id);
+              }}
+              aria-pressed={active}
+              className={`shrink-0 rounded-full px-3.5 py-2 text-[11px] font-extrabold transition active:scale-95 ${
+                active
+                  ? "animate-chip-pop bg-gradient-to-b from-navy-700 to-navy-900 text-cream shadow-[0_2px_0_#080926]"
+                  : "border border-ink/10 bg-white/80 text-ink-soft hover:border-orange-300"
+              }`}
+            >
+              {c.label}
+            </button>
+          );
+        })}
       </div>
 
       <div className="grid grid-cols-4 gap-2">
@@ -249,7 +252,7 @@ export function StickerPanel({
               haptic("select");
               onSelect(addSticker(def.id));
             }}
-            className="group flex aspect-square flex-col items-center justify-center gap-1 rounded-2xl border border-navy-100 bg-white p-1.5 transition active:scale-90 hover:border-orange-300"
+            className="group flex aspect-square flex-col items-center justify-center gap-1 rounded-[14px] border border-ink/10 bg-white/85 p-1.5 shadow-sm transition hover:border-orange-300 hover:bg-white active:scale-90"
           >
             <img
               src={stickerSrc(def)}
@@ -257,7 +260,7 @@ export function StickerPanel({
               draggable={false}
               className="h-full max-h-12 w-full object-contain transition group-active:scale-110"
             />
-            <span className="w-full truncate text-center text-[9px] font-semibold leading-none text-muted">
+            <span className="w-full truncate text-center text-[9px] font-extrabold uppercase tracking-[0.06em] leading-none text-muted">
               {def.name}
             </span>
           </button>
@@ -265,23 +268,27 @@ export function StickerPanel({
       </div>
 
       {selected ? (
-        <div className="animate-pop space-y-3 rounded-2xl border border-navy-100 bg-navy-50/60 p-3">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-bold text-ink">
-              {getSticker(selected.stickerId)?.name}
+        <div className="animate-pop space-y-3 rounded-[18px] border border-ink/10 bg-cream/70 p-3">
+          <div className="flex items-center justify-between gap-2">
+            <p className="flex min-w-0 items-center gap-1.5 text-[12px] font-extrabold text-navy-800">
+              <Layers className="h-3.5 w-3.5 shrink-0 text-orange-600" />
+              <span className="truncate">{getSticker(selected.stickerId)?.name}</span>
             </p>
             <button
               type="button"
               onClick={() => onSelect(null)}
-              className="text-[11px] font-semibold text-muted"
+              className="shrink-0 rounded-full border border-ink/10 bg-white px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-[0.1em] text-ink-soft transition active:scale-95"
             >
               Selesai
             </button>
           </div>
 
           <label className="block">
-            <span className="mb-1 flex justify-between text-[11px] font-semibold text-ink-soft">
-              Ukuran <span>{Math.round(selected.size * 100)}%</span>
+            <span className="mb-0.5 flex items-center justify-between text-[10px] font-extrabold uppercase tracking-[0.1em] text-ink-soft">
+              Ukuran
+              <span className="font-mono text-[9px] tracking-normal text-navy-600">
+                {Math.round(selected.size * 100)}%
+              </span>
             </span>
             <input
               type="range"
@@ -292,12 +299,16 @@ export function StickerPanel({
               onChange={(e) =>
                 updateSticker(selected.id, { size: Number(e.target.value) / 100 })
               }
-              className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-orange-100 accent-orange-600"
+              aria-label="Ukuran stiker"
+              className="range-fest"
             />
           </label>
           <label className="block">
-            <span className="mb-1 flex justify-between text-[11px] font-semibold text-ink-soft">
-              Putar <span>{selected.rotation}°</span>
+            <span className="mb-0.5 flex items-center justify-between text-[10px] font-extrabold uppercase tracking-[0.1em] text-ink-soft">
+              Putar
+              <span className="font-mono text-[9px] tracking-normal text-navy-600">
+                {selected.rotation}°
+              </span>
             </span>
             <input
               type="range"
@@ -308,7 +319,8 @@ export function StickerPanel({
               onChange={(e) =>
                 updateSticker(selected.id, { rotation: Number(e.target.value) })
               }
-              className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-orange-100 accent-orange-600"
+              aria-label="Putar stiker"
+              className="range-fest"
             />
           </label>
 
@@ -355,7 +367,7 @@ export function StickerPanel({
           </div>
         </div>
       ) : (
-        <p className="rounded-2xl bg-navy-50/70 px-3 py-2.5 text-center text-[11px] leading-relaxed text-muted">
+        <p className="rounded-[14px] border border-dashed border-ink/15 bg-cream/50 px-3 py-2.5 text-center text-[10.5px] leading-relaxed text-muted">
           Ketuk aksesori untuk menambahkan. Geser di foto untuk memindah, tarik
           tombol bulat di pojok untuk ubah ukuran &amp; putar.
         </p>
@@ -369,7 +381,7 @@ export function StickerPanel({
             clearStickers();
             onSelect(null);
           }}
-          className="w-full rounded-xl py-2 text-[11px] font-bold text-rose-500 transition active:scale-95"
+          className="w-full rounded-xl border border-rose-200/70 bg-rose-50/70 py-2 text-[10px] font-extrabold uppercase tracking-[0.1em] text-rose-600 transition hover:bg-rose-100 active:scale-95"
         >
           Hapus semua stiker ({stickers.length})
         </button>
@@ -393,10 +405,10 @@ function ToolButton({
     <button
       type="button"
       onClick={onClick}
-      className={`flex flex-col items-center gap-1 rounded-xl py-2 text-[10px] font-bold transition active:scale-90 ${
+      className={`flex flex-col items-center gap-1 rounded-[12px] py-2 text-[9px] font-extrabold uppercase tracking-[0.06em] transition active:scale-90 ${
         danger
-          ? "bg-rose-50 text-rose-500"
-          : "bg-white text-navy-700 ring-1 ring-navy-100"
+          ? "bg-rose-50 text-rose-600 ring-1 ring-rose-200/70"
+          : "bg-white text-navy-700 ring-1 ring-ink/10 shadow-sm"
       }`}
     >
       {children}

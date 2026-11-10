@@ -109,6 +109,49 @@ export const FRAME_OPTIONS: FrameOption[] = [
       { x: 0.7351, y: 0.694, w: 0.2168, h: 0.2246 },
     ],
   },
+  {
+    id: "diary-inces",
+    name: "Diary Inces · Folder",
+    description: "Frame landscape bergaya folder dengan 1 foto besar dan 3 foto lain.",
+    color: "#fb9b00",
+    src: "/frames/frame-diary-inces.png?v=1",
+    width: 3496,
+    height: 2480,
+    windows: [
+      { x: 0.0538, y: 0.173, w: 0.3962, h: 0.7609 },
+      { x: 0.4608, y: 0.173, w: 0.1962, h: 0.3762 },
+      { x: 0.4608, y: 0.5637, w: 0.1962, h: 0.3766 },
+      { x: 0.6676, y: 0.4052, w: 0.2789, h: 0.5347 },
+    ],
+  },
+  {
+    id: "tribiz-kuning",
+    name: "Tribiz Fest · Kuning",
+    description: "Frame landscape kuning ceria dengan 1 foto besar dan 3 foto kecil.",
+    color: "#ffd600",
+    src: "/frames/frame-tribiz-kuning.png?v=1",
+    width: 3496,
+    height: 2480,
+    windows: [
+      { x: 0.0495, y: 0.2246, w: 0.6696, h: 0.694 },
+      { x: 0.7337, y: 0.225, w: 0.2168, h: 0.2242 },
+      { x: 0.734, y: 0.4593, w: 0.2165, h: 0.2246 },
+      { x: 0.7337, y: 0.694, w: 0.2168, h: 0.2242 },
+    ],
+  },
+  {
+    id: "tribiz-perangko",
+    name: "Tribiz Fest · Perangko Duo",
+    description: "Dua foto portrait bergaya perangko di latar cokelat keemasan.",
+    color: "#b07a2a",
+    src: "/frames/frame-tribiz-perangko.png?v=1",
+    width: 2000,
+    height: 1419,
+    windows: [
+      { x: 0.0901, y: 0.1952, w: 0.339, h: 0.65 },
+      { x: 0.5709, y: 0.1952, w: 0.339, h: 0.65 },
+    ],
+  },
 ];
 
 export function getFrameById(id: string): FrameOption | undefined {

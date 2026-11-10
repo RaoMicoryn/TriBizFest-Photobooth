@@ -7,8 +7,6 @@ import {
   Camera,
   Check,
   Loader2,
-  Sparkles,
-  ZoomIn,
   ZoomOut,
   RotateCcw,
   Download,
@@ -256,11 +254,11 @@ export function FrameSelector({ embedded = false }: { embedded?: boolean }) {
   return (
     <div className="space-y-5">
       {FRAME_OPTIONS.length === 0 && (
-        <div className="rounded-[28px] border border-white/70 bg-white/85 p-7 text-center shadow-soft backdrop-blur-xl animate-fade-up">
+        <div className="card animate-fade-up p-7 text-center">
           <span className="mx-auto mb-3 grid h-14 w-14 place-items-center rounded-2xl bg-navy-100 text-navy-500">
             <ImageIcon className="h-6 w-6" />
           </span>
-          <h3 className="text-base font-bold text-ink">Bingkai belum tersedia</h3>
+          <h3 className="font-display text-[20px] text-navy-800">Bingkai belum tersedia</h3>
           <p className="mx-auto mt-1.5 max-w-[260px] text-xs leading-relaxed text-muted">
             Desain bingkai baru sedang disiapkan. Foto yang sudah kamu unggah
             tetap tersimpan.
@@ -279,19 +277,26 @@ export function FrameSelector({ embedded = false }: { embedded?: boolean }) {
       )}
 
       {FRAME_OPTIONS.length > 0 && (
-      <div className="rounded-[28px] border border-white/70 bg-white/85 p-5 shadow-soft backdrop-blur-xl animate-fade-up">
-        <div className="mb-4 flex items-center gap-3">
-          <span className="grid h-10 w-10 place-items-center rounded-2xl bg-orange-100 text-orange-600">
-            <Sparkles className="w-5 h-5" />
-          </span>
-          <div>
-            <h3 className="text-base font-bold text-ink">Pilih Bingkai</h3>
-            <p className="text-xs text-muted">
-              {userImages.length
-                ? `Ketuk untuk mencoba bingkai · ${userImages.length} foto siap`
-                : "Ketuk untuk memilih bingkai"}
-            </p>
+      <div className="card animate-fade-up p-4 sm:p-5">
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[11px] border border-ink/10 bg-cream font-display text-[16px] text-navy-800 shadow-sm">
+              02
+            </span>
+            <div>
+              <h3 className="font-display text-[19px] leading-none text-navy-800">
+                Pilih Bingkai
+              </h3>
+              <p className="mt-1 text-[10.5px] text-muted">
+                {userImages.length
+                  ? `Ketuk untuk mencoba · ${userImages.length} foto siap`
+                  : "Ketuk untuk memilih bingkai"}
+              </p>
+            </div>
           </div>
+          <span className="shrink-0 rounded-full border border-ink/10 bg-white px-2.5 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.12em] text-navy-600">
+            {FRAME_OPTIONS.length} gaya
+          </span>
         </div>
 
         <div className="space-y-2.5">
@@ -303,71 +308,91 @@ export function FrameSelector({ embedded = false }: { embedded?: boolean }) {
                 type="button"
                 onClick={() => handleSelect(option)}
                 aria-pressed={isSelected}
-                className={`group flex w-full items-center gap-3.5 rounded-[22px] border-2 p-2.5 pr-3.5 text-left transition-all duration-200 active:scale-[0.99] animate-fade-up ${
+                className={`group relative flex w-full items-center gap-3 rounded-[18px] border-2 p-2 pr-3 text-left transition-all duration-200 active:translate-y-[1px] animate-fade-up ${
                   isSelected
-                    ? "border-orange-500 bg-orange-50/60 shadow-md shadow-orange-500/15"
-                    : "border-navy-100/70 bg-white hover:border-orange-300 hover:shadow-sm"
+                    ? "border-navy-800 bg-cream shadow-[0_3px_0_rgba(20,16,42,0.85)]"
+                    : "border-ink/10 bg-white/75 hover:border-orange-300 hover:bg-white"
                 }`}
                 style={{ animationDelay: `${idx * 60}ms` }}
               >
-                {/* Live thumbnail: each window shows its own photo. */}
-                <div
-                  className="relative h-[96px] shrink-0 overflow-hidden rounded-xl bg-navy-100 ring-1 ring-black/10"
-                  style={{ aspectRatio: `${option.width} / ${option.height}` }}
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute right-11 top-0.5 font-display text-[38px] leading-none text-navy-900/[0.06]"
                 >
-                  {option.windows.map((win, winIndex) => {
-                    const photo = userImages[winIndex] ?? userImages[0];
-                    return (
-                      <div
-                        key={winIndex}
-                        className="absolute overflow-hidden"
-                        style={{
-                          left: `${win.x * 100}%`,
-                          top: `${win.y * 100}%`,
-                          width: `${win.w * 100}%`,
-                          height: `${win.h * 100}%`,
-                        }}
-                      >
-                        {photo ? (
-                          <img
-                            src={photo}
-                            alt=""
-                            aria-hidden="true"
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-full w-full items-center justify-center bg-navy-100 text-navy-300">
-                            <ImageIcon className="h-4 w-4" />
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                  <img
-                    src={option.src}
-                    alt=""
-                    aria-hidden="true"
-                    className="absolute inset-0 h-full w-full transition-transform duration-300 group-hover:scale-[1.04]"
-                  />
-                </div>
+                  {String(idx + 1).padStart(2, "0")}
+                </span>
 
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <p
-                      className={`text-sm font-bold ${
-                        isSelected ? "text-orange-700" : "text-ink"
+                {/* Live thumbnail: each window shows its own photo. */}
+                <span className="relative shrink-0 rounded-[11px] bg-white p-1 shadow-sm ring-1 ring-ink/10">
+                  <span
+                    className="relative block h-[92px] overflow-hidden rounded-[7px] bg-navy-100"
+                    style={{ aspectRatio: `${option.width} / ${option.height}` }}
+                  >
+                    {option.windows.map((win, winIndex) => {
+                      const photo = userImages[winIndex] ?? userImages[0];
+                      return (
+                        <span
+                          key={winIndex}
+                          className="absolute overflow-hidden"
+                          style={{
+                            left: `${win.x * 100}%`,
+                            top: `${win.y * 100}%`,
+                            width: `${win.w * 100}%`,
+                            height: `${win.h * 100}%`,
+                          }}
+                        >
+                          {photo ? (
+                            <img
+                              src={photo}
+                              alt=""
+                              aria-hidden="true"
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <span className="flex h-full w-full items-center justify-center bg-navy-100 text-navy-300">
+                              <ImageIcon className="h-4 w-4" />
+                            </span>
+                          )}
+                        </span>
+                      );
+                    })}
+                    <img
+                      src={option.src}
+                      alt=""
+                      aria-hidden="true"
+                      className="absolute inset-0 h-full w-full transition-transform duration-300 group-hover:scale-[1.04]"
+                    />
+                  </span>
+                  {isSelected && (
+                    <span className="absolute -left-1.5 -top-1.5 -rotate-6 rounded-[3px] border-2 border-orange-600/80 bg-cream px-1.5 py-0.5 text-[8px] font-extrabold uppercase tracking-[0.14em] text-orange-700 shadow-sm">
+                      Dipilih
+                    </span>
+                  )}
+                </span>
+
+                <span className="relative min-w-0 flex-1">
+                  <span className="flex flex-wrap items-center gap-1.5">
+                    <span
+                      className={`font-display text-[16px] leading-none ${
+                        isSelected ? "text-navy-800" : "text-ink"
                       }`}
                     >
                       {option.name}
-                    </p>
-                    <span className="rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-bold text-orange-700">
+                    </span>
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wide ${
+                        isSelected
+                          ? "bg-orange-600 text-white"
+                          : "bg-navy-50 text-navy-600"
+                      }`}
+                    >
                       {option.windows.length} foto
                     </span>
-                  </div>
-                  <p className="mt-0.5 line-clamp-2 text-[11px] leading-relaxed text-muted">
+                  </span>
+                  <span className="mt-1.5 line-clamp-2 block text-[10.5px] leading-relaxed text-muted">
                     {option.description}
-                  </p>
-                </div>
+                  </span>
+                </span>
 
                 <span
                   className={`grid h-6 w-6 shrink-0 place-items-center rounded-full border-2 transition-all ${
@@ -384,7 +409,7 @@ export function FrameSelector({ embedded = false }: { embedded?: boolean }) {
         </div>
 
         {isRendering && (
-          <div className="mt-4 flex items-center justify-center gap-2 rounded-2xl bg-navy-50 py-3 text-sm font-semibold text-navy-600">
+          <div className="mt-4 flex items-center justify-center gap-2 rounded-2xl bg-cream py-3 text-[11px] font-bold text-navy-700">
             <Loader2 className="h-4 w-4 animate-spin" /> Menyiapkan bingkai...
           </div>
         )}
@@ -392,13 +417,14 @@ export function FrameSelector({ embedded = false }: { embedded?: boolean }) {
       )}
 
       {!userImages.length && (
-        <div className="rounded-[28px] border border-white/70 bg-white/85 p-6 text-center shadow-soft backdrop-blur-xl animate-fade-up">
-          <span className="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-2xl bg-orange-100 text-orange-600">
-            <Camera className="h-5 w-5" />
+        <div className="card animate-fade-up p-6 text-center">
+          <span className="mx-auto mb-3 grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-b from-orange-500 to-orange-700 text-white shadow-[0_3px_0_#5c0716]">
+            <Camera className="h-6 w-6" />
           </span>
-          <p className="text-sm font-bold text-ink">Belum ada foto</p>
-          <p className="mx-auto mt-1 max-w-[240px] text-xs leading-relaxed text-muted">
-            Ambil foto dulu, lalu pilih bingkai yang kamu mau.
+          <p className="font-display text-[21px] text-navy-800">Belum ada foto</p>
+          <p className="mx-auto mt-1.5 max-w-[250px] text-xs leading-relaxed text-muted">
+            Ambil foto dulu, lalu pilih bingkai yang kamu mau. Bingkainya bisa
+            diganti kapan saja.
           </p>
           <Button
             variant="accent"
@@ -416,29 +442,42 @@ export function FrameSelector({ embedded = false }: { embedded?: boolean }) {
       {frame && userImages.length > 0 && (
         <div
           ref={previewRef}
-          className="scroll-mt-4 rounded-[28px] border border-white/70 bg-white/85 p-5 shadow-float backdrop-blur-xl animate-pop"
+          className="card scroll-mt-4 animate-pop overflow-hidden shadow-float"
         >
-          <div className="mb-1 flex items-center gap-2">
-            <span className="grid h-8 w-8 place-items-center rounded-xl bg-navy-100 text-navy-600">
-              <ImageIcon className="w-4 h-4" />
+          <div className="flex items-start justify-between gap-3 border-b border-ink/10 px-4 py-3.5 sm:px-5">
+            <div className="flex min-w-0 items-center gap-2.5">
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[11px] bg-navy-800 text-cream shadow-[0_2px_0_#080926]">
+                <ImageIcon className="h-[17px] w-[17px]" />
+              </span>
+              <div className="min-w-0">
+                <h3 className="font-display text-[19px] leading-none text-navy-800">
+                  Atur Foto
+                </h3>
+                <p className="mt-1.5 truncate text-[9px] font-extrabold uppercase tracking-[0.14em] text-muted">
+                  Geser · zoom · tempel stiker
+                </p>
+              </div>
+            </div>
+            <span className="max-w-[8rem] shrink-0 truncate rounded-full border border-ink/10 bg-cream px-2.5 py-1.5 text-[9px] font-extrabold uppercase tracking-wide text-navy-700">
+              {frame.name}
             </span>
-            <h3 className="text-base font-bold text-ink">Atur Foto</h3>
           </div>
-          <p className="mb-3 pl-10 text-[11px] text-muted">
-            Geser foto untuk mengatur bagian yang masuk bingkai, lalu tambah stiker biar makin seru
-          </p>
 
-          <div
-            ref={boxRef}
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={onPointerUp}
-            onPointerCancel={onPointerUp}
-            className={`relative mx-auto w-full max-w-[420px] touch-none select-none overflow-hidden rounded-[18px] bg-white shadow-inner ring-1 ring-black/5 ${
-              editMode === "foto" ? "cursor-grab active:cursor-grabbing" : ""
-            }`}
-            style={{ aspectRatio: `${frame.width} / ${frame.height}` }}
-          >
+          <div className="relative overflow-hidden bg-[linear-gradient(180deg,#f7ecd3,#fbf3df)] px-3 py-5 sm:px-4">
+            <div className="relative mx-auto w-full max-w-[420px]">
+              <span className="tape -top-2.5 left-6 -rotate-6" aria-hidden="true" />
+              <span className="tape -top-2.5 right-6 rotate-6" aria-hidden="true" />
+              <div
+                ref={boxRef}
+                onPointerDown={onPointerDown}
+                onPointerMove={onPointerMove}
+                onPointerUp={onPointerUp}
+                onPointerCancel={onPointerUp}
+                className={`artboard mx-auto w-full touch-none select-none ${
+                  editMode === "foto" ? "cursor-grab active:cursor-grabbing" : ""
+                }`}
+                style={{ aspectRatio: `${frame.width} / ${frame.height}` }}
+              >
             {frame.bleed && (
               <img
                 src={userImages[0]}
@@ -517,10 +556,13 @@ export function FrameSelector({ embedded = false }: { embedded?: boolean }) {
                 if (id) setEditMode("stiker");
               }}
             />
+              </div>
+            </div>
           </div>
 
+          <div className="p-4 sm:p-5">
           {/* Mode switch */}
-          <div className="mt-4 grid grid-cols-2 gap-1 rounded-2xl bg-navy-50 p-1">
+          <div className="segmented grid-cols-2">
             {(
               [
                 { key: "foto", label: "Atur Foto", icon: <ImageIcon className="h-4 w-4" /> },
@@ -536,11 +578,7 @@ export function FrameSelector({ embedded = false }: { embedded?: boolean }) {
                   if (tab.key === "foto") setSelectedSticker(null);
                 }}
                 aria-pressed={editMode === tab.key}
-                className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs font-bold transition active:scale-95 ${
-                  editMode === tab.key
-                    ? "bg-white text-navy-700 shadow-sm"
-                    : "text-muted"
-                }`}
+                className="seg-btn"
               >
                 {tab.icon}
                 {tab.label}
@@ -600,8 +638,8 @@ export function FrameSelector({ embedded = false }: { embedded?: boolean }) {
           {editMode === "foto" && (
           <>
           {/* Zoom */}
-          <div className="mt-4 flex items-center gap-3">
-            <ZoomOut className="h-4 w-4 shrink-0 text-orange-500" />
+          <div className="mt-4 flex items-center gap-3 rounded-2xl border border-ink/8 bg-cream/60 px-3 py-1">
+            <ZoomOut className="h-4 w-4 shrink-0 text-orange-600" />
             <input
               type="range"
               min={1}
@@ -610,9 +648,11 @@ export function FrameSelector({ embedded = false }: { embedded?: boolean }) {
               value={zoom}
               onChange={(e) => applyZoom(Number(e.target.value))}
               aria-label="Zoom foto"
-              className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-orange-100 accent-orange-600"
+              className="range-fest"
             />
-            <ZoomIn className="h-4 w-4 shrink-0 text-orange-500" />
+            <span className="w-8 shrink-0 text-right font-mono text-[9px] font-bold text-navy-600">
+              {Math.round(zoom * 100)}%
+            </span>
           </div>
 
           <div className="mt-3 grid grid-cols-2 gap-2">
@@ -644,6 +684,7 @@ export function FrameSelector({ embedded = false }: { embedded?: boolean }) {
             {!embedded && (
               <Button
                 variant="outline"
+                className="h-[52px]"
                 onClick={() => {
                   setStep("upload");
                   router.push("/");
@@ -654,7 +695,7 @@ export function FrameSelector({ embedded = false }: { embedded?: boolean }) {
             )}
             <Button
               variant="accent"
-              className={embedded ? "w-full" : undefined}
+              className={`h-[52px] ${embedded ? "w-full" : ""}`}
               disabled={!canDownload}
               onClick={async () => {
                 // Flush any pending debounced render so the export preview
@@ -677,6 +718,10 @@ export function FrameSelector({ embedded = false }: { embedded?: boolean }) {
                 <>Foto Belum Siap</>
               )}
             </Button>
+          </div>
+          <p className="mt-2.5 text-center text-[9px] font-extrabold uppercase tracking-[0.16em] text-muted">
+            PNG · resolusi tinggi · siap cetak
+          </p>
           </div>
         </div>
       )}

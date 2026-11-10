@@ -36,7 +36,7 @@ export function FrameSheet({
         tabIndex={open ? 0 : -1}
         aria-label="Tutup pilihan bingkai"
         onClick={onClose}
-        className={`absolute inset-0 bg-navy-900/30 backdrop-blur-[2px] transition-opacity duration-300 ${
+        className={`absolute inset-0 bg-navy-950/45 backdrop-blur-[3px] transition-opacity duration-300 ${
           open ? "opacity-100" : "opacity-0"
         }`}
       />
@@ -50,33 +50,37 @@ export function FrameSheet({
           open ? "translate-y-0" : "translate-y-full"
         }`}
       >
-        <div className="mx-auto w-full max-w-md rounded-[28px] border border-white/80 bg-white/95 p-4 shadow-float backdrop-blur-xl">
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5">
-              <span className="grid h-9 w-9 place-items-center rounded-xl bg-orange-100 text-orange-600">
+        <div className="ticket relative mx-auto w-full max-w-md overflow-hidden p-4">
+          {/* ticket notches */}
+          <span className="notch absolute -left-[13px] top-[86px] border border-ink/15" aria-hidden="true" />
+          <span className="notch absolute -right-[13px] top-[86px] border border-ink/15" aria-hidden="true" />
+
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-2.5">
+              <span className="grid h-10 w-10 shrink-0 -rotate-3 place-items-center rounded-[12px] bg-navy-800 text-cream shadow-[0_2px_0_#080926] ring-2 ring-cream">
                 <Frame className="h-[18px] w-[18px]" />
               </span>
-              <div>
-                <h3 className="text-sm font-bold leading-tight text-ink">
+              <div className="min-w-0">
+                <p className="label-sm text-orange-700">Ganti gaya</p>
+                <h3 className="mt-1 truncate font-display text-[19px] leading-none text-navy-800">
                   Pilih Bingkai
                 </h3>
-                <p className="text-[11px] text-muted">
-                  Pratinjau kamera langsung ikut berubah
-                </p>
               </div>
             </div>
             <button
               type="button"
               onClick={onClose}
               aria-label="Tutup"
-              className="grid h-9 w-9 place-items-center rounded-full bg-navy-50 text-ink-soft transition hover:bg-navy-100 active:scale-95"
+              className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-ink/10 bg-white text-ink-soft shadow-sm transition hover:bg-cream active:scale-95"
             >
               <X className="h-4 w-4" />
             </button>
           </div>
 
-          <div className="flex gap-2.5 overflow-x-auto pb-1">
-            {FRAME_OPTIONS.map((option) => {
+          <div className="perf my-3" aria-hidden="true" />
+
+          <div className="no-scrollbar -mx-1 flex gap-2.5 overflow-x-auto px-1 pb-1">
+            {FRAME_OPTIONS.map((option, idx) => {
               const isActive = activeId === option.id;
               return (
                 <button
@@ -87,55 +91,73 @@ export function FrameSheet({
                     onClose();
                   }}
                   aria-pressed={isActive}
-                  className={`relative shrink-0 rounded-2xl border-2 p-1.5 text-left transition active:scale-[0.98] ${
+                  className={`group relative shrink-0 rounded-[16px] p-1.5 text-left transition active:translate-y-[1px] ${
                     isActive
-                      ? "border-orange-500 bg-orange-50"
-                      : "border-navy-100 bg-white hover:border-orange-300"
+                      ? "bg-cream ring-2 ring-ink shadow-[0_3px_0_rgba(20,16,42,0.85)]"
+                      : "bg-white/70 ring-1 ring-ink/10 hover:ring-orange-300"
                   }`}
                 >
-                  <div
-                    className="relative h-20 overflow-hidden rounded-xl bg-navy-100 ring-1 ring-black/10"
-                    style={{ aspectRatio: `${option.width} / ${option.height}` }}
-                  >
-                    {userImages.length > 0 &&
-                      option.windows.map((win, i) => (
-                        <img
-                          key={i}
-                          src={userImages[i] ?? userImages[0]}
-                          alt=""
-                          aria-hidden="true"
-                          className="absolute object-cover"
-                          style={{
-                            left: `${win.x * 100}%`,
-                            top: `${win.y * 100}%`,
-                            width: `${win.w * 100}%`,
-                            height: `${win.h * 100}%`,
-                          }}
-                        />
-                      ))}
-                    <img
-                      src={option.src}
-                      alt=""
+                  <div className="relative overflow-hidden rounded-[10px] bg-navy-100">
+                    <div
+                      className="relative h-20 overflow-hidden bg-navy-100"
+                      style={{ aspectRatio: `${option.width} / ${option.height}` }}
+                    >
+                      {userImages.length > 0 &&
+                        option.windows.map((win, i) => (
+                          <img
+                            key={i}
+                            src={userImages[i] ?? userImages[0]}
+                            alt=""
+                            aria-hidden="true"
+                            className="absolute object-cover"
+                            style={{
+                              left: `${win.x * 100}%`,
+                              top: `${win.y * 100}%`,
+                              width: `${win.w * 100}%`,
+                              height: `${win.h * 100}%`,
+                            }}
+                          />
+                        ))}
+                      <img
+                        src={option.src}
+                        alt=""
+                        aria-hidden="true"
+                        className="absolute inset-0 h-full w-full transition-transform duration-300 group-hover:scale-[1.04]"
+                      />
+                    </div>
+                    <span
                       aria-hidden="true"
-                      className="absolute inset-0 h-full w-full"
-                    />
+                      className="pointer-events-none absolute left-1 top-0.5 font-mono text-[9px] font-bold tracking-widest text-white/90 [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]"
+                    >
+                      {String(idx + 1).padStart(2, "0")}
+                    </span>
                   </div>
+
                   <p
-                    className={`mt-1.5 max-w-[170px] truncate px-0.5 text-[11px] font-bold ${
-                      isActive ? "text-orange-700" : "text-ink"
+                    className={`mt-1.5 max-w-[170px] truncate px-0.5 text-[10.5px] font-extrabold ${
+                      isActive ? "text-navy-800" : "text-ink-soft"
                     }`}
                   >
-                    {option.name} · {option.windows.length} foto
+                    {option.name}
+                    <span className="ml-1 font-mono text-[9px] font-bold tracking-wider text-muted">
+                      {option.windows.length}×
+                    </span>
                   </p>
+
                   {isActive && (
-                    <span className="absolute right-2.5 top-2.5 grid h-5 w-5 place-items-center rounded-full bg-orange-600 text-white shadow">
-                      <Check className="h-3 w-3" />
+                    <span className="absolute -right-1.5 -top-1.5 grid h-6 w-6 place-items-center rounded-full bg-orange-600 text-white shadow-[0_2px_0_#5c0716] ring-2 ring-cream">
+                      <Check className="h-3.5 w-3.5" />
                     </span>
                   )}
                 </button>
               );
             })}
           </div>
+
+          <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-[9px] font-extrabold uppercase tracking-[0.14em] text-muted">
+            <span className="h-1 w-1 rounded-full bg-orange-500" />
+            Pratinjau kamera langsung ikut berubah
+          </p>
         </div>
       </div>
     </div>

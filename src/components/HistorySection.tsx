@@ -62,13 +62,13 @@ function HistoryViewer({
       role="dialog"
       aria-modal="true"
       aria-label="Hasil foto"
-      className={`fixed inset-0 z-[60] flex flex-col bg-neutral-950/92 text-white backdrop-blur-md ${
+      className={`fixed inset-0 z-[60] flex flex-col bg-navy-950/94 text-white backdrop-blur-md ${
         closing ? "animate-cam-out" : "animate-cam-in"
       }`}
       style={{ height: "100dvh" }}
     >
       <div className="flex items-center justify-between px-4 pb-2 pt-[max(env(safe-area-inset-top),0.75rem)]">
-        <p className="text-sm font-bold">
+        <p className="label text-cream/80">
           {new Date(item.createdAt).toLocaleString("id-ID", {
             day: "numeric",
             month: "short",
@@ -87,11 +87,17 @@ function HistoryViewer({
       </div>
 
       <div className="flex min-h-0 flex-1 items-center justify-center px-4 py-2">
-        <img
-          src={item.image}
-          alt="Hasil photobooth"
-          className="animate-pop max-h-full max-w-full rounded-2xl object-contain shadow-2xl"
-        />
+        {/* Same polaroid print as the export preview */}
+        <div className="animate-pop max-h-full max-w-full rotate-[0.6deg] rounded-[6px] bg-white p-2.5 pb-7 shadow-2xl">
+          <img
+            src={item.image}
+            alt="Hasil photobooth"
+            className="max-h-[calc(100dvh-20rem)] w-auto max-w-full rounded-[2px] object-contain"
+          />
+          <p className="mt-2 text-center font-mono text-[8.5px] font-bold tracking-[0.2em] text-muted">
+            TRIBIZ FEST · 2026
+          </p>
+        </div>
       </div>
 
       <div className="animate-slide-up-soft space-y-2.5 px-4 pb-[max(env(safe-area-inset-bottom),1rem)] pt-3">
@@ -151,18 +157,18 @@ export function HistorySection() {
   const openItem = items.find((x) => x.id === openId) ?? null;
 
   return (
-    <section className="animate-fade-up stagger-3 rounded-[28px] border border-white/70 bg-white/85 p-4 shadow-soft backdrop-blur-xl sm:p-5">
+    <section className="card animate-fade-up stagger-3 p-4 sm:p-5">
       <div className="mb-3 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-navy-100 text-navy-600">
+          <span className="grid h-9 w-9 place-items-center rounded-[11px] bg-gradient-to-b from-orange-500 to-orange-700 text-white shadow-[0_2px_0_#5c0716]">
             <History className="h-[18px] w-[18px]" />
           </span>
           <div>
-            <h3 className="text-sm font-bold leading-tight text-ink">
-              Hasil Terakhir
+            <h3 className="font-display text-[19px] leading-none text-navy-800">
+              Arsip Foto
             </h3>
-            <p className="text-[11px] text-muted">
-              Tersimpan di perangkat ini · {items.length} foto
+            <p className="mt-1 text-[10.5px] text-muted">
+              {items.length} hasil tersimpan di perangkat ini
             </p>
           </div>
         </div>
@@ -171,27 +177,32 @@ export function HistorySection() {
           onClick={() => {
             if (window.confirm("Hapus semua riwayat foto?")) clearHistory();
           }}
-          className="shrink-0 rounded-full bg-navy-50 px-3 py-2 text-[11px] font-bold text-ink-soft transition active:scale-95 hover:bg-navy-100"
+          className="shrink-0 rounded-full border border-ink/10 bg-white px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.1em] text-ink-soft transition hover:border-rose-200 hover:text-rose-600 active:scale-95"
         >
-          Hapus semua
+          Hapus
         </button>
       </div>
 
-      <div className="no-scrollbar -mx-1 flex snap-x gap-2.5 overflow-x-auto px-1 pb-1">
+      <div className="no-scrollbar -mx-1 flex snap-x gap-3 overflow-x-auto px-1 pb-2 pt-1">
         {items.map((item, i) => (
           <button
             key={item.id}
             type="button"
             onClick={() => setOpenId(item.id)}
             style={{ animationDelay: `${i * 50}ms` }}
-            className="animate-fade-up group relative h-28 shrink-0 snap-start overflow-hidden rounded-2xl bg-navy-50 ring-1 ring-black/10 transition active:scale-95"
+            className={`animate-fade-up group relative shrink-0 snap-start rounded-[9px] bg-white p-1.5 pb-5 shadow-print ring-1 ring-ink/5 transition duration-300 hover:rotate-0 active:scale-95 ${
+              i % 2 ? "rotate-[1.8deg]" : "-rotate-[1.8deg]"
+            }`}
           >
             <img
               src={item.image}
               alt="Hasil sebelumnya"
               draggable={false}
-              className="h-full w-auto object-cover transition duration-300 group-hover:scale-[1.03]"
+              className="h-28 w-auto max-w-[124px] rounded-[3px] object-cover ring-1 ring-ink/10"
             />
+            <span className="absolute inset-x-0 bottom-1.5 text-center font-mono text-[8.5px] font-bold tracking-[0.2em] text-ink-soft/75">
+              TF · {String(i + 1).padStart(2, "0")}
+            </span>
           </button>
         ))}
       </div>

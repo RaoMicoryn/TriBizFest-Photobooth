@@ -1,60 +1,91 @@
 @import "tailwindcss";
 
 /* ============================================================
-   SOFT STUDIO — a warm, playful, premium photobooth theme.
-   Light-only on purpose so the design stays coherent everywhere.
+   TRIBIZ FEST PHOTOBOOTH — "Festival Print Shop"
+   Warm paper, indigo ink, festival red & gold, ticket stubs,
+   film sprockets and rubber stamps. Light-only on purpose.
    ============================================================ */
 
 @theme {
-  --color-ink: #101828;
-  --color-ink-soft: #344054;
-  --color-muted: #667085;
-  --color-line: #e4e7ec;
+  --color-ink: #14102a;
+  --color-ink-soft: #3b3358;
+  --color-muted: #5f5878;
+  --color-line: #e8dfcd;
   --color-surface: #ffffff;
+  --color-paper: #fbf3df;
+  --color-gold: #f2b300;
 
   /* Tribiz Fest palette: indigo (navy-*), red + gold (orange-*), cream. */
-  --color-navy-50: #f3f3fb;
-  --color-navy-100: #e5e6f7;
-  --color-navy-200: #c9cbee;
-  --color-navy-300: #a0a4de;
-  --color-navy-400: #6b70c4;
-  --color-navy-500: #3d3fa0;
-  --color-navy-600: #2c2d8a;
-  --color-navy-700: #1f2077;
-  --color-navy-800: #171860;
-  --color-navy-900: #0f1040;
-  --color-cream: #fffdf0;
+  --color-navy-50: #f3f3fc;
+  --color-navy-100: #e5e6f8;
+  --color-navy-200: #c9cbf0;
+  --color-navy-300: #9fa2e2;
+  --color-navy-400: #6b6ecb;
+  --color-navy-500: #4244a8;
+  --color-navy-600: #2d2e8f;
+  --color-navy-700: #202177;
+  --color-navy-800: #16175c;
+  --color-navy-900: #0d0e3c;
+  --color-navy-950: #080926;
+  --color-cream: #fff8e7;
+  --color-cream-deep: #f6e9c9;
 
-  /* "orange" now runs gold -> Tribiz red, so every accent turns festival red. */
-  --color-orange-50: #fff8e6;
-  --color-orange-100: #ffeec2;
-  --color-orange-200: #ffdd8a;
+  /* "orange" runs gold -> festival red. */
+  --color-orange-50: #fff8e7;
+  --color-orange-100: #ffefc2;
+  --color-orange-200: #ffdd85;
   --color-orange-300: #ffc74a;
-  --color-orange-400: #fba81d;
-  --color-orange-500: #e0300f;
-  --color-orange-600: #c10000;
-  --color-orange-700: #9a0000;
-  --color-orange-800: #7a0000;
-  --color-orange-900: #5c0000;
+  --color-orange-400: #f7a600;
+  --color-orange-500: #e23a17;
+  --color-orange-600: #c8102e;
+  --color-orange-700: #a00d26;
+  --color-orange-800: #7d0a1e;
+  --color-orange-900: #5c0716;
 
-  --color-brand: #1f2077;
-  --color-brand-600: #1f2077;
-  --color-brand-500: #3d3fa0;
-  --color-brand-soft: #f3f3fb;
-  --color-brand-tint: #e5e6f7;
 
-  --color-accent: #c10000;
-  --color-sun: #fb9b00;
+  /* Semantic colours re-tuned to sit on warm paper instead of stock Tailwind:
+     rose = festival red (errors / destructive), emerald = success,
+     amber = gold (warnings). Components keep using rose-*, emerald-*, amber-*. */
+  --color-rose-50: #fff1ef;
+  --color-rose-100: #ffe0dc;
+  --color-rose-200: #ffc3bb;
+  --color-rose-300: #ff9d92;
+  --color-rose-400: #f0614f;
+  --color-rose-500: #d1213a;
+  --color-rose-600: #b00e28;
+  --color-emerald-50: #eef7ee;
+  --color-emerald-100: #d6ecd9;
+  --color-emerald-500: #2f9e5b;
+  --color-emerald-600: #23804a;
+  --color-emerald-700: #1c6a3d;
+  --color-amber-50: #fff6dc;
+  --color-amber-200: #ffe08a;
+  --color-amber-600: #a86a00;
+  --color-amber-700: #8a5600;
+
+  --color-brand: #202177;
+  --color-brand-600: #202177;
+  --color-brand-500: #4244a8;
+  --color-brand-soft: #f3f3fc;
+  --color-brand-tint: #e5e6f8;
+
+  --color-accent: #c8102e;
+  --color-sun: #f7a600;
 
   --font-display: var(--font-lilita), var(--font-geist-sans), system-ui, sans-serif;
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-instrument), Georgia, "Times New Roman", serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --radius-card: 26px;
 }
 
 :root {
   color-scheme: light;
-  --background: #fffdf0;
-  --foreground: #101828;
+  --background: #fbf3df;
+  --foreground: #14102a;
+  --ink: #14102a;
+  --paper: #fbf3df;
 }
 
 * {
@@ -62,22 +93,30 @@
 }
 
 html {
-  scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+}
+
+html:has(body [data-smooth-scroll]) {
+  scroll-behavior: smooth;
 }
 
 body {
   background-color: var(--background);
   background-image:
-    radial-gradient(rgba(31, 32, 119, 0.07) 1.4px, transparent 1.6px),
-    radial-gradient(46rem 30rem at 105% -6%, rgba(251, 155, 0, 0.16), transparent 60%),
-    radial-gradient(42rem 28rem at -10% 4%, rgba(31, 32, 119, 0.10), transparent 58%),
-    radial-gradient(40rem 28rem at 50% 118%, rgba(193, 0, 0, 0.08), transparent 60%);
-  background-size: 22px 22px, auto, auto, auto;
+    /* fine paper grain */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E"),
+    /* dot grid */
+    radial-gradient(rgba(32, 33, 119, 0.09) 1.2px, transparent 1.4px),
+    /* warm washes */
+    radial-gradient(46rem 32rem at 108% -10%, rgba(247, 166, 0, 0.28), transparent 60%),
+    radial-gradient(40rem 30rem at -12% 0%, rgba(32, 33, 119, 0.16), transparent 58%),
+    radial-gradient(46rem 34rem at 48% 116%, rgba(200, 16, 46, 0.14), transparent 62%),
+    linear-gradient(180deg, #fdf7e6 0%, #fbf3df 44%, #f8efd8 100%);
+  background-size: 180px 180px, 22px 22px, auto, auto, auto, auto;
   background-attachment: fixed;
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
@@ -89,6 +128,11 @@ img {
   -webkit-touch-callout: none;
 }
 
+::selection {
+  background: #ffdd85;
+  color: #16175c;
+}
+
 /* ---------- Safe areas ---------- */
 .safe-bottom {
   padding-bottom: max(env(safe-area-inset-bottom), 1rem);
@@ -97,43 +141,363 @@ img {
   padding-top: max(env(safe-area-inset-top), 0.75rem);
 }
 
-/* ---------- Utilities ---------- */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-.touch {
-  touch-action: manipulation;
-}
-.image-fit-cover {
-  object-fit: cover;
-}
-.image-fit-contain {
-  object-fit: contain;
+/* ============================================================
+   TYPE
+   ============================================================ */
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.005em;
 }
 
-/* ---------- Glass + cards ---------- */
-.glass {
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(18px) saturate(150%);
-  -webkit-backdrop-filter: blur(18px) saturate(150%);
+.font-serif-i {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
 }
 
+.label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.label-sm {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+/* ink headline with a gold hard shadow */
+.headline-ink {
+  color: var(--ink);
+  text-shadow: 2px 2px 0 rgba(242, 179, 0, 0.9);
+}
+
+/* outlined display numeral */
+.outline-year {
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(20, 16, 42, 0.28);
+}
+
+/* sticker lettering: white surface, red outline, hard print shadow */
+.title-sticker {
+  color: #fff;
+  text-shadow:
+    -2px -2px 0 #c8102e, 2px -2px 0 #c8102e, -2px 2px 0 #c8102e, 2px 2px 0 #c8102e,
+    0 -2px 0 #c8102e, 0 2px 0 #c8102e, -2px 0 0 #c8102e, 2px 0 0 #c8102e,
+    0 6px 0 rgba(20, 16, 42, 0.45);
+}
+
+.hairline {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(20, 16, 42, 0.16), transparent);
+}
+
+/* ============================================================
+   SURFACES
+   ============================================================ */
+.card {
+  position: relative;
+  border-radius: var(--radius-card);
+  border: 1px solid rgba(20, 16, 42, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 251, 241, 0.94));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 1px 2px rgba(20, 16, 42, 0.05),
+    0 24px 50px -30px rgba(20, 16, 42, 0.4);
+}
+
+.card-ink {
+  position: relative;
+  border-radius: var(--radius-card);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background:
+    radial-gradient(120% 130% at 100% 0%, rgba(226, 58, 23, 0.5), transparent 55%),
+    radial-gradient(90% 120% at 0% 100%, rgba(242, 179, 0, 0.25), transparent 58%),
+    linear-gradient(155deg, #292a94 0%, #1b1c6e 48%, #0d0e3c 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 30px 60px -32px rgba(8, 9, 38, 0.9);
+}
+
+/* Cream ticket with ink frame + offset print shadow */
+.ticket {
+  position: relative;
+  border: 2px solid var(--ink);
+  border-radius: 28px;
+  background:
+    linear-gradient(180deg, #fffaf0 0%, #fdf3dd 100%);
+  box-shadow:
+    0 6px 0 -1px rgba(20, 16, 42, 0.92),
+    0 26px 50px -26px rgba(20, 16, 42, 0.55);
+}
+
+/* perforation line for ticket stubs */
+.perf {
+  --dot: rgba(20, 16, 42, 0.35);
+  height: 1px;
+  background-image: radial-gradient(circle, var(--dot) 1.1px, transparent 1.4px);
+  background-size: 9px 2px;
+  background-repeat: repeat-x;
+}
+
+/* punched notch used at the ticket edge */
+.notch {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow: inset 0 1px 2px rgba(20, 16, 42, 0.18);
+}
+
+/* washi tape */
+.tape {
+  position: absolute;
+  height: 22px;
+  width: 74px;
+  background:
+    linear-gradient(180deg, rgba(255, 214, 102, 0.92), rgba(242, 179, 0, 0.78));
+  box-shadow: 0 1px 3px rgba(20, 16, 42, 0.18);
+  clip-path: polygon(3% 0, 97% 0, 100% 50%, 97% 100%, 3% 100%, 0 50%);
+  opacity: 0.9;
+}
+
+/* rubber stamp */
+.stamp {
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 2px solid currentColor;
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.55), inset 0 0 0 4px currentColor;
+  opacity: 0.92;
+}
+
+.barcode {
+  height: 26px;
+  background-image:
+    repeating-linear-gradient(90deg, #14102a 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, #14102a 0 2px, transparent 2px 7px),
+    repeating-linear-gradient(90deg, #14102a 0 1px, transparent 1px 5px);
+  opacity: 0.75;
+}
+
+/* film strip: dark band with white sprocket holes top + bottom */
+.filmstrip {
+  position: relative;
+  background: linear-gradient(180deg, #14102a 0%, #0d0e2c 100%);
+}
+.filmstrip::before,
+.filmstrip::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 9px;
+  background-image: radial-gradient(circle at 5px 4.5px, rgba(255, 248, 231, 0.9) 2.4px, transparent 2.8px);
+  background-size: 14px 9px;
+  opacity: 0.85;
+}
+.filmstrip::before { top: 0; }
+.filmstrip::after { bottom: 0; }
+
+/* ============================================================
+   PHOTO ARTBOARD
+   ============================================================ */
+.artboard {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow:
+    inset 0 0 0 1px rgba(20, 16, 42, 0.08),
+    0 18px 40px -22px rgba(20, 16, 42, 0.55);
+}
+
+/* ============================================================
+   CONTROLS
+   ============================================================ */
+.segmented {
+  display: grid;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 18px;
+  border: 1px solid rgba(20, 16, 42, 0.08);
+  background: rgba(20, 16, 42, 0.045);
+  box-shadow: inset 0 1px 3px rgba(20, 16, 42, 0.07);
+}
+.seg-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 14px;
+  padding: 10px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-muted);
+  transition: all 0.2s ease;
+}
+.seg-btn[aria-pressed="true"] {
+  background: #fff;
+  color: var(--color-navy-700);
+  box-shadow:
+    0 1px 2px rgba(20, 16, 42, 0.1),
+    0 8px 18px -12px rgba(20, 16, 42, 0.55);
+}
+
+/* gold -> red slider */
+.range-fest {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 32px;
+  background: transparent;
+  cursor: pointer;
+}
+.range-fest::-webkit-slider-runnable-track {
+  height: 9px;
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, #ffd166 0%, #f7a600 45%, #e23a17 78%, #c8102e 100%);
+  box-shadow: inset 0 1px 2px rgba(125, 10, 30, 0.25);
+}
+.range-fest::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  margin-top: -7px;
+  width: 23px;
+  height: 23px;
+  border-radius: 999px;
+  background: #fffaf0;
+  border: 3px solid #14102a;
+  box-shadow:
+    0 1px 2px rgba(20, 16, 42, 0.3),
+    0 4px 10px -2px rgba(20, 16, 42, 0.45);
+  transition: transform 0.15s ease;
+}
+.range-fest:active::-webkit-slider-thumb {
+  transform: scale(1.12);
+}
+.range-fest::-moz-range-track {
+  height: 9px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ffd166 0%, #f7a600 45%, #e23a17 78%, #c8102e 100%);
+}
+.range-fest::-moz-range-thumb {
+  width: 19px;
+  height: 19px;
+  border-radius: 999px;
+  background: #fffaf0;
+  border: 3px solid #14102a;
+}
+
+/* dark glass pill for camera overlays */
+.cam-pill {
+  background: rgba(255, 255, 255, 0.13);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+
+/* viewfinder corner brackets */
+.viewfinder::before,
+.viewfinder::after,
+.viewfinder > .vf-br::before,
+.viewfinder > .vf-br::after {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-color: rgba(255, 248, 231, 0.85);
+  border-style: solid;
+  border-width: 0;
+}
+.viewfinder::before {
+  top: 10px;
+  left: 10px;
+  border-top-width: 2px;
+  border-left-width: 2px;
+}
+.viewfinder::after {
+  top: 10px;
+  right: 10px;
+  border-top-width: 2px;
+  border-right-width: 2px;
+}
+.viewfinder > .vf-br::before {
+  bottom: 10px;
+  left: 10px;
+  border-bottom-width: 2px;
+  border-left-width: 2px;
+}
+.viewfinder > .vf-br::after {
+  bottom: 10px;
+  right: 10px;
+  border-bottom-width: 2px;
+  border-right-width: 2px;
+}
+
+/* ============================================================
+   TEXTURES
+   ============================================================ */
+.polka {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.16) 2px, transparent 2.4px);
+  background-size: 17px 17px;
+}
+
+.grid-lines {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.09) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+
+.stripes-ink {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(20, 16, 42, 0.06) 0 1px,
+    transparent 1px 7px
+  );
+}
+
+.star-shape {
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+
+/* ============================================================
+   SHADOWS
+   ============================================================ */
 .shadow-soft {
   box-shadow:
-    0 1px 2px rgba(31, 32, 119, 0.05),
-    0 12px 40px -18px rgba(31, 32, 119, 0.22);
+    0 1px 2px rgba(20, 16, 42, 0.05),
+    0 16px 36px -22px rgba(20, 16, 42, 0.32);
 }
 .shadow-float {
   box-shadow:
-    0 2px 6px rgba(31, 32, 119, 0.06),
-    0 24px 60px -20px rgba(31, 32, 119, 0.30);
+    0 2px 6px rgba(20, 16, 42, 0.06),
+    0 30px 60px -26px rgba(20, 16, 42, 0.42);
+}
+.shadow-print {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 10px 22px -12px rgba(20, 16, 42, 0.4),
+    0 30px 60px -34px rgba(20, 16, 42, 0.55);
+}
+.drop-photo {
+  filter: drop-shadow(0 12px 18px rgba(20, 16, 42, 0.35));
 }
 
-/* ---------- Animations ---------- */
+/* ============================================================
+   ANIMATION
+   ============================================================ */
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(14px); }
   to { opacity: 1; transform: translateY(0); }
@@ -145,7 +509,14 @@ img {
 }
 @keyframes float-slow {
   0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-14px) rotate(4deg); }
+  50% { transform: translateY(-12px) rotate(3deg); }
+}
+@keyframes seal-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 @keyframes shimmer {
   0% { background-position: -200% 0; }
@@ -154,7 +525,10 @@ img {
 @keyframes spin-slow {
   to { transform: rotate(360deg); }
 }
-
+@keyframes develop {
+  from { clip-path: inset(0 0 100% 0); opacity: 0.4; }
+  to { clip-path: inset(0 0 0 0); opacity: 1; }
+}
 @keyframes cam-in {
   from { opacity: 0; transform: scale(1.04); }
   to { opacity: 1; transform: scale(1); }
@@ -176,35 +550,34 @@ img {
   60% { transform: scale(1.06); }
   100% { transform: scale(1); }
 }
-
-.animate-cam-in {
-  animation: cam-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-4deg); }
+  50% { transform: rotate(4deg); }
 }
-.animate-cam-out {
-  animation: cam-out 0.2s ease-in both;
+@keyframes twinkle {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  50% { transform: scale(0.7) rotate(25deg); opacity: 0.7; }
 }
-.animate-shutter-flash {
-  animation: shutter-flash 0.45s ease-out both;
-}
-.animate-slide-up-soft {
-  animation: slide-up-soft 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-.animate-chip-pop {
-  animation: chip-pop 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+@keyframes ring-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(200, 16, 46, 0.45); }
+  100% { box-shadow: 0 0 0 18px rgba(200, 16, 46, 0); }
 }
 
-.animate-fade-up {
-  animation: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-.animate-pop {
-  animation: pop-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-.animate-float {
-  animation: float-slow 7s ease-in-out infinite;
-}
-.animate-spin-slow {
-  animation: spin-slow 1s linear infinite;
-}
+.animate-fade-up { animation: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.animate-pop { animation: pop-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.animate-float { animation: float-slow 8s ease-in-out infinite; }
+.animate-spin-slow { animation: spin-slow 1s linear infinite; }
+.animate-seal { animation: seal-spin 26s linear infinite; }
+.animate-marquee { animation: marquee 26s linear infinite; }
+.animate-wiggle { animation: wiggle 2.6s ease-in-out infinite; }
+.animate-twinkle { animation: twinkle 2.2s ease-in-out infinite; }
+.animate-ring-pulse { animation: ring-pulse 1.8s ease-out infinite; }
+.animate-develop { animation: develop 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.animate-cam-in { animation: cam-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.animate-cam-out { animation: cam-out 0.2s ease-in both; }
+.animate-shutter-flash { animation: shutter-flash 0.45s ease-out both; }
+.animate-slide-up-soft { animation: slide-up-soft 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.animate-chip-pop { animation: chip-pop 0.28s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
 .stagger-1 { animation-delay: 0.05s; }
 .stagger-2 { animation-delay: 0.1s; }
@@ -212,14 +585,23 @@ img {
 .stagger-4 { animation-delay: 0.2s; }
 
 /* ---------- Focus ring ---------- */
+:where(a, button, input, select, textarea, summary, [role="button"], [tabindex]):focus-visible {
+  outline: 3px solid rgba(200, 16, 46, 0.6);
+  outline-offset: 2px;
+  border-radius: inherit;
+}
+.cam-pill:focus-visible,
+[role="dialog"] :where(button):focus-visible {
+  outline-color: rgba(255, 248, 231, 0.9);
+}
 .focus-brand:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 4px rgba(193, 0, 0, 0.22);
+  box-shadow: 0 0 0 4px rgba(200, 16, 46, 0.22);
 }
 
 /* ---------- Text gradient ---------- */
 .text-gradient {
-  background: linear-gradient(120deg, #1f2077 0%, #c10000 55%, #fb9b00 100%);
+  background: linear-gradient(120deg, #202177 0%, #c8102e 55%, #f7a600 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -231,76 +613,22 @@ input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-
-/* ---------- Tribiz Fest flavour ---------- */
-.font-display {
-  font-family: var(--font-display);
-  font-weight: 400;
-  letter-spacing: 0.01em;
+input[type="range"] {
+  touch-action: pan-y;
 }
-
-/* Chunky "sticker" lettering: white title with a red outline + hard shadow. */
-.title-sticker {
-  color: #fff;
-  -webkit-text-stroke: 0;
-  text-shadow:
-    -3px -3px 0 #c10000, 3px -3px 0 #c10000, -3px 3px 0 #c10000, 3px 3px 0 #c10000,
-    0 -3px 0 #c10000, 0 3px 0 #c10000, -3px 0 0 #c10000, 3px 0 0 #c10000,
-    0 6px 0 #7a0000;
-}
-
-/* Polka-dot texture for hero cards. */
-.polka {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.14) 2.2px, transparent 2.6px);
-  background-size: 18px 18px;
-}
-
-/* Stamp-like perforated edge (matches the frame artwork). */
-.stamp-edge {
-  --r: 7px;
-  --s: 22px;
-  -webkit-mask:
-    radial-gradient(circle var(--r) at 50% 0, transparent 98%, #000) top / var(--s) 51% repeat-x,
-    radial-gradient(circle var(--r) at 50% 100%, transparent 98%, #000) bottom / var(--s) 51% repeat-x,
-    radial-gradient(circle var(--r) at 0 50%, transparent 98%, #000) left / 51% var(--s) repeat-y,
-    radial-gradient(circle var(--r) at 100% 50%, transparent 98%, #000) right / 51% var(--s) repeat-y;
-  -webkit-mask-composite: source-in;
-  mask:
-    radial-gradient(circle var(--r) at 50% 0, #0000 98%, #000) top / var(--s) 51% repeat-x intersect,
-    radial-gradient(circle var(--r) at 50% 100%, #0000 98%, #000) bottom / var(--s) 51% repeat-x intersect,
-    radial-gradient(circle var(--r) at 0 50%, #0000 98%, #000) left / 51% var(--s) repeat-y intersect,
-    radial-gradient(circle var(--r) at 100% 50%, #0000 98%, #000) right / 51% var(--s) repeat-y intersect;
-}
-
-.star-shape {
-  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-}
-
-@keyframes wiggle {
-  0%, 100% { transform: rotate(-4deg); }
-  50% { transform: rotate(4deg); }
-}
-@keyframes twinkle {
-  0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
-  50% { transform: scale(0.7) rotate(25deg); opacity: 0.7; }
-}
-@keyframes ring-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(193, 0, 0, 0.45); }
-  100% { box-shadow: 0 0 0 18px rgba(193, 0, 0, 0); }
-}
-.animate-wiggle { animation: wiggle 2.6s ease-in-out infinite; }
-.animate-twinkle { animation: twinkle 2.2s ease-in-out infinite; }
-.animate-ring-pulse { animation: ring-pulse 1.8s ease-out infinite; }
 
 /* Smoother taps on touch devices */
 button, a, [role="button"] {
   -webkit-user-select: none;
   user-select: none;
 }
-input[type="range"] {
-  touch-action: pan-y;
-  height: 1.75rem;
-}
+
+/* ---------- Utilities ---------- */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.touch { touch-action: manipulation; }
+.image-fit-cover { object-fit: cover; }
+.image-fit-contain { object-fit: contain; }
 
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {

@@ -1,46 +1,91 @@
 "use client";
 
-import { Sparkles, Camera, AlertCircle, Smile, Film, QrCode } from "lucide-react";
+import { Sparkles, Camera, Smile, Film, QrCode, Star } from "lucide-react";
 import { PhotoUploader } from "@/components/PhotoUploader";
 import { HistorySection } from "@/components/HistorySection";
 import { PhotoboothShell } from "@/components/PhotoboothShell";
-import { usePhotobooth } from "@/lib/photobooth-context";
+
+const MARQUEE = ["Official Photobooth", "Tribiz Fest 2026", "Lensa Abadi", "Chroma Rana"];
 
 export default function UploadPage() {
-  const { error } = usePhotobooth();
-
   return (
     <PhotoboothShell step="upload" title="Mulai" showBack={false}>
       <div className="space-y-4">
-        {/* Hero */}
-        <section className="relative overflow-hidden rounded-[30px] bg-navy-700 p-5 pb-6 text-white shadow-float animate-pop sm:p-7">
-          <div className="polka absolute inset-0" />
-          <div className="absolute -right-12 -top-12 h-44 w-44 rounded-full bg-orange-400/30 blur-2xl" />
-          <div className="absolute -bottom-14 -left-10 h-40 w-40 rounded-full bg-orange-600/35 blur-2xl" />
+        {/* Festival ticket hero */}
+        <section className="ticket animate-pop overflow-hidden">
+          {/* Marquee strip */}
+          <div className="relative overflow-hidden border-b-2 border-ink bg-navy-800 py-2 text-cream">
+            <div className="animate-marquee flex w-max items-center">
+              {[0, 1].map((dup) => (
+                <div key={dup} className="flex shrink-0 items-center gap-5 pr-5" aria-hidden={dup === 1}>
+                  {[...Array(3)].flatMap((_, r) =>
+                    MARQUEE.map((text) => (
+                      <span key={`${r}-${text}`} className="label-sm flex items-center gap-2 whitespace-nowrap text-cream/90">
+                        <Star className="h-2.5 w-2.5 fill-gold text-gold" />
+                        {text}
+                      </span>
+                    )),
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
 
-          {/* Floating stars */}
-          <span className="star-shape animate-twinkle absolute right-6 top-5 h-7 w-7 bg-orange-400" />
-          <span className="star-shape animate-twinkle absolute right-16 top-14 h-4 w-4 bg-white [animation-delay:0.6s]" />
-          <span className="star-shape animate-wiggle absolute bottom-5 right-7 h-9 w-9 bg-orange-600 ring-2 ring-white" />
-
-          <div className="relative">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-navy-700">
-              <Sparkles className="h-3.5 w-3.5 text-orange-600" /> Lensa Abadi
+          <div className="relative px-5 pb-5 pt-5">
+            <div className="stripes-ink pointer-events-none absolute inset-0 opacity-50" />
+            <span
+              aria-hidden="true"
+              className="outline-year pointer-events-none absolute -right-2 -top-1 select-none font-display text-[118px] leading-none opacity-60"
+            >
+              26
             </span>
-            <h2 className="font-display title-sticker mt-4 text-[40px] leading-[0.95] sm:text-5xl">
-              TRIBIZ
-              <br />
-              FEST <span className="text-orange-300">2026</span>
-            </h2>
-            <p className="mt-3 inline-block rounded-lg bg-orange-600 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wide text-white shadow-md">
-              Every tradition tells a story
-            </p>
-            <p className="mt-3 max-w-[17rem] text-[13px] leading-relaxed text-white/85">
+
+        <div className="relative flex flex-wrap items-center gap-1.5">
+          {["Lensa Abadi", "Chroma Rana"].map((name) => (
+            <span
+              key={name}
+              className="inline-flex items-center gap-1.5 rounded-full border border-ink/12 bg-white px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-[0.16em] text-navy-700 shadow-sm"
+            >
+              <Sparkles className="h-3 w-3 text-orange-600" /> {name}
+            </span>
+          ))}
+        </div>
+            <div className="relative mt-3 flex items-start justify-between gap-2">
+              <div className="min-w-0">
+
+                <h2 className="font-display text-[52px] leading-[0.8] text-navy-800">
+                  TRIBIZ
+                  <br />
+                  <span className="text-orange-600">FEST</span>
+                </h2>
+
+                <div className="mt-2 flex items-end gap-2">
+                  <span className="headline-ink font-display text-[40px] leading-none">
+                    2026
+                  </span>
+                  <span className="font-serif-i pb-0.5 text-[16px] leading-none text-ink-soft">
+                    setiap cerita
+                  </span>
+                </div>
+              </div>
+
+              {/* Rubber seal */}
+              <div className="relative -mt-10 grid h-[80px] w-[80px] shrink-0 -rotate-6 place-items-center rounded-full border-2 border-orange-700/80 bg-orange-50 text-orange-700 shadow-[0_2px_0_rgba(20,16,42,0.15)]">
+                <span className="absolute inset-[5px] rounded-full border border-dashed border-orange-700/45" />
+                <span className="text-center">
+                  <span className="block text-[7.5px] font-extrabold tracking-[0.16em]">EST 2026</span>
+                  <Star className="mx-auto my-0.5 h-3.5 w-3.5 fill-orange-600 stroke-orange-600" />
+                  <span className="block text-[7.5px] font-extrabold tracking-[0.14em]">TRIBIZ</span>
+                </span>
+              </div>
+            </div>
+
+            <p className="relative mt-3 max-w-[19rem] text-[12.5px] leading-relaxed text-ink-soft">
               Foto berurutan, pilih bingkai, tempel stiker &amp; aksesori, lalu
               unduh atau bagikan lewat QR.
             </p>
 
-            <div className="mt-4 flex flex-wrap gap-1.5">
+            <div className="relative mt-4 grid grid-cols-2 gap-1.5">
               {[
                 { icon: <Camera className="h-3.5 w-3.5" />, label: "Foto berurutan" },
                 { icon: <Smile className="h-3.5 w-3.5" />, label: "20 aksesori" },
@@ -49,23 +94,30 @@ export default function UploadPage() {
               ].map((chip) => (
                 <span
                   key={chip.label}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-[11px] font-bold backdrop-blur"
+                  className="flex items-center gap-1.5 rounded-lg border border-ink/10 bg-white/85 px-2.5 py-2 text-[10px] font-bold text-ink-soft shadow-sm"
                 >
-                  {chip.icon}
+                  <span className="text-orange-600">{chip.icon}</span>
                   {chip.label}
                 </span>
               ))}
             </div>
           </div>
-        </section>
 
-        {/* Error */}
-        {error && (
-          <div className="flex items-start gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-600 animate-fade-up">
-            <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0" />
-            <span className="font-medium">{error}</span>
+          {/* Ticket stub */}
+          <div className="relative border-t-2 border-dashed border-ink/20 px-5 py-3">
+            <span className="notch absolute -left-[13px] top-0 -translate-y-1/2 border border-ink/15" aria-hidden="true" />
+            <span className="notch absolute -right-[13px] top-0 -translate-y-1/2 border border-ink/15" aria-hidden="true" />
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="label-sm text-ink-soft/80">Admit one · photobooth</p>
+                <p className="mt-1 font-mono text-[10px] font-semibold tracking-[0.18em] text-navy-700">
+                  TF-2026-0001
+                </p>
+              </div>
+              <div className="barcode w-24" aria-hidden="true" />
+            </div>
           </div>
-        )}
+        </section>
 
         <PhotoUploader />
         <HistorySection />

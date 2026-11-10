@@ -17,23 +17,39 @@ export default function ExportPage() {
     if (!readPhotoboothState().framedImage) router.replace("/");
   }, [router]);
 
-  if (!framedImage) return null;
+  // Nothing to export yet: show a placeholder while the effect above redirects.
+  if (!framedImage) {
+    return (
+      <PhotoboothShell step="export" title="Unduh Hasil">
+        <div className="card h-[26rem] animate-pulse" aria-busy="true" />
+      </PhotoboothShell>
+    );
+  }
 
   return (
     <PhotoboothShell step="export" title="Unduh Hasil">
-      <div className="space-y-5">
+      <div className="space-y-4">
         <DownloadSection />
 
-        <Button
-          variant="outline"
-          className="w-full"
-          onClick={() => {
-            reset();
-            router.push("/");
-          }}
-        >
-          <RefreshCw className="h-4 w-4" /> Mulai Photobooth Baru
-        </Button>
+        <div className="card animate-fade-up stagger-3 flex items-center justify-between gap-3 p-3.5">
+          <div className="min-w-0">
+            <p className="label-sm text-muted">Sesi selesai?</p>
+            <p className="mt-1.5 font-serif-i text-[15px] leading-none text-navy-800">
+              Ambil momen berikutnya
+            </p>
+          </div>
+          <Button
+            variant="secondary"
+            size="sm"
+            className="shrink-0"
+            onClick={() => {
+              reset();
+              router.push("/");
+            }}
+          >
+            <RefreshCw className="h-3.5 w-3.5" /> Mulai Baru
+          </Button>
+        </div>
       </div>
     </PhotoboothShell>
   );
