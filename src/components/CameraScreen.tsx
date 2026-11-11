@@ -430,9 +430,13 @@ export function CameraScreen({
   /* ---------------- render ---------------- */
 
   const windows = previewFrame?.windows ?? [{ x: 0, y: 0, w: 1, h: 1 }];
-  const showError = error ?? (unsupported
-    ? "Browser ini tidak mendukung akses kamera. Silakan gunakan galeri."
-    : null);
+  // Canon tethered mode does not need a webcam stream: the camera writes
+  // JPEG files into the watched folder and the browser imports them directly.
+  const showError = watchDir
+    ? null
+    : error ?? (unsupported
+      ? "Browser ini tidak mendukung akses kamera. Silakan gunakan galeri."
+      : null);
 
   return createPortal(
     <div
@@ -691,12 +695,12 @@ export function CameraScreen({
                   }`}
                 >
                   <FolderOpen className="h-3 w-3" />
-                  {watchDir ? "Shutter Kamera: ON" : "Shutter Kamera"}
+                  {watchDir ? "Canon Terhubung" : "Hubungkan Canon"}
                 </button>
               </div>
               {(watchDir || watchMsg) && (
                 <p className="mb-2 px-0.5 text-[10px] font-semibold text-muted">
-                  {watchMsg ?? "Menunggu jepretan dari kamera…"}
+                  {watchMsg ?? "Folder terhubung. Atur EOS Utility agar foto JPEG otomatis masuk ke folder ini, lalu tekan tombol shutter pada kamera Canon."}
                 </p>
               )}
               <div className="no-scrollbar -mx-1 mb-3 flex gap-1.5 overflow-x-auto px-1">
