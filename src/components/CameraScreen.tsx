@@ -274,6 +274,8 @@ export function CameraScreen({
     if (watchDir) {
       setWatchDir(null);
       setWatchMsg(null);
+      setLoading(true);
+      setAttempt((value) => value + 1);
       return;
     }
     const picker = (window as unknown as { showDirectoryPicker?: DirPicker })
@@ -293,8 +295,15 @@ export function CameraScreen({
         const f = await entry.getFile();
         seenRef.current.add(`${f.name}|${f.lastModified}`);
       }
+      // DSLR photos should keep their original left/right orientation and
+      // neutral color. Stop the laptop webcam preview: the Canon folder is now
+      // the only capture source for this session.
+      stream?.getTracks().forEach((track) => track.stop());
+      setStream(null);
+      setMirror(false);
+      setFilterId("normal");
       setWatchDir(dir);
-      setWatchMsg(null);
+      setWatchMsg("Canon siap menerima foto. Kamu cukup memotret dari kamera; JPG baru akan muncul otomatis di sini.");
     } catch {
       /* picker cancelled */
     }
@@ -479,7 +488,7 @@ export function CameraScreen({
         <button
           type="button"
           onClick={() => setMirror((m) => !m)}
-          disabled={!!captured}
+          disabled={!!captured || !!watchDir}
           aria-pressed={mirror}
           aria-label="Balik cermin"
           className={`grid h-11 w-11 place-items-center rounded-full transition active:scale-90 disabled:opacity-0 ${
@@ -680,6 +689,25 @@ export function CameraScreen({
                 {isLastShot ? "Pakai Foto" : `Lanjut Foto ${currentShot + 2}`}
               </Button>
             </div>
+          ) : watchDir ? (
+            <div className="animate-slide-up-soft flex items-center justify-between gap-3 px-1 py-2">
+              <div className="flex min-w-0 items-center gap-3">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-emerald-100 text-emerald-800">
+                  <FolderOpen className="h-5 w-5" />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-[12px] font-extrabold text-navy-800">Canon siap · menunggu foto</span>
+                  <span className="mt-0.5 block text-[10px] leading-snug text-muted">Kamu tekan shutter di Canon. Foto JPG akan masuk otomatis.</span>
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => void toggleShutterMode()}
+                className="shrink-0 rounded-full border border-rose-200 bg-rose-50 px-3 py-2 text-[10px] font-extrabold text-rose-700 transition hover:bg-rose-100"
+              >
+                Putuskan
+              </button>
+            </div>
           ) : (
             <>
               <div className="mb-2 flex items-center justify-between gap-2 px-0.5">
@@ -688,20 +716,14 @@ export function CameraScreen({
                   type="button"
                   onClick={() => void toggleShutterMode()}
                   aria-pressed={!!watchDir}
-                  className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold transition active:scale-95 ${
-                    watchDir
-                      ? "bg-navy-800 text-cream shadow-sm"
-                      : "border border-ink/10 bg-white/80 text-ink-soft"
-                  }`}
+                  className="inline-flex items-center gap-1 rounded-full border border-ink/10 bg-white/80 px-2.5 py-1 text-[10px] font-bold text-ink-soft transition active:scale-95"
                 >
                   <FolderOpen className="h-3 w-3" />
-                  {watchDir ? "Canon Terhubung" : "Hubungkan Canon"}
+                  Hubungkan Canon
                 </button>
               </div>
-              {(watchDir || watchMsg) && (
-                <p className="mb-2 px-0.5 text-[10px] font-semibold text-muted">
-                  {watchMsg ?? "Folder terhubung. Atur EOS Utility agar foto JPEG otomatis masuk ke folder ini, lalu tekan tombol shutter pada kamera Canon."}
-                </p>
+              {watchMsg && (
+                <p className="mb-2 px-0.5 text-[10px] font-semibold text-muted">{watchMsg}</p>
               )}
               <div className="no-scrollbar -mx-1 mb-3 flex gap-1.5 overflow-x-auto px-1">
                 {PHOTO_FILTERS.map((f) => {
