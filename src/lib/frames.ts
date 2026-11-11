@@ -218,6 +218,62 @@ export const FRAME_OPTIONS: FrameOption[] = [
       { x: 0.1005, y: 0.6988, w: 0.7978, h: 0.2718 },
     ],
   },
+  {
+    id: "milkshake-kuning",
+    name: "Milkshake · Kuning",
+    description: "Frame portrait Mix A'Milk dengan 1 foto besar dan 2 foto kecil.",
+    color: "#ffe000",
+    src: "/frames/frame-milkshake-kuning.png?v=1",
+    width: 1984,
+    height: 2480,
+    windows: [
+      { x: 0.0806, y: 0.1536, w: 0.8387, h: 0.4887 },
+      { x: 0.0761, y: 0.6935, w: 0.3881, h: 0.2258 },
+      { x: 0.5358, y: 0.6935, w: 0.3881, h: 0.2258 },
+    ],
+  },
+  {
+    id: "milkshake-cokelat",
+    name: "Milkshake · Cokelat",
+    description: "Frame portrait Mix A'Milk dengan 1 foto besar dan 2 foto kecil.",
+    color: "#855003",
+    src: "/frames/frame-milkshake-cokelat.png?v=1",
+    width: 1984,
+    height: 2480,
+    windows: [
+      { x: 0.0806, y: 0.1536, w: 0.8387, h: 0.4887 },
+      { x: 0.0761, y: 0.6935, w: 0.3881, h: 0.2258 },
+      { x: 0.5358, y: 0.6935, w: 0.3881, h: 0.2258 },
+    ],
+  },
+  {
+    id: "milkshake-merah",
+    name: "Milkshake · Merah",
+    description: "Frame portrait Mix A'Milk dengan 1 foto besar dan 2 foto kecil.",
+    color: "#c00000",
+    src: "/frames/frame-milkshake-merah.png?v=1",
+    width: 1984,
+    height: 2480,
+    windows: [
+      { x: 0.0806, y: 0.1536, w: 0.8387, h: 0.4887 },
+      { x: 0.0761, y: 0.6935, w: 0.3881, h: 0.2258 },
+      { x: 0.5358, y: 0.6935, w: 0.3881, h: 0.2258 },
+    ],
+  },
+  {
+    id: "milkshake-hitam",
+    name: "Milkshake · Hitam Putih",
+    description: "Frame portrait Mix A'Milk dengan 1 foto besar dan 2 foto kecil.",
+    color: "#222222",
+    src: "/frames/frame-milkshake-hitam.png?v=1",
+    width: 1984,
+    height: 2480,
+    windows: [
+      { x: 0.0806, y: 0.1536, w: 0.8387, h: 0.4887 },
+      { x: 0.0761, y: 0.6935, w: 0.3881, h: 0.2258 },
+      { x: 0.5358, y: 0.6935, w: 0.3881, h: 0.2258 },
+    ],
+  },
 ];
 
 export function getFrameById(id: string): FrameOption | undefined {
