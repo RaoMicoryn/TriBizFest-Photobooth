@@ -14,6 +14,7 @@ import {
   Check,
   ChevronDown,
   FlipHorizontal2,
+  FolderOpen,
   Frame,
   Loader2,
   RotateCcw,
@@ -32,6 +33,18 @@ import {
 import { usePhotobooth } from "@/lib/photobooth-context";
 
 const MAX_CAPTURE_DIM = 1600;
+
+/** Minimal typing for the File System Access API (not in every TS lib). */
+type WatchEntry = {
+  kind: string;
+  name: string;
+  getFile?: () => Promise<File>;
+};
+type WatchDir = { name?: string; values(): AsyncIterable<WatchEntry> };
+type DirPicker = (opts?: { mode?: "read" }) => Promise<WatchDir>;
+
+const IMAGE_RE = /\.(jpe?g|png)$/i;
+const WATCH_INTERVAL_MS = 700;
 
 /** A <video> bound to a (shared) camera stream. */
 function LiveVideo({
@@ -119,6 +132,13 @@ export function CameraScreen({
   const [flashKey, setFlashKey] = useState(0);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [closing, setClosing] = useState(false);
+
+  /** Tethered Canon: folder where the camera's shots land (shutter on the body). */
+  const [watchDir, setWatchDir] = useState<WatchDir | null>(null);
+  const [watchMsg, setWatchMsg] = useState<string | null>(null);
+  const seenRef = useRef<Set<string>>(new Set());
+  const pendingRef = useRef<Map<string, number>>(new Map());
+  const scanningRef = useRef(false);
 
   const captureRef = useRef<HTMLVideoElement>(null);
   // Live selfie recording (whole session, mirrored + filtered like the preview).
@@ -247,6 +267,97 @@ export function CameraScreen({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [handleClose]);
+
+  /* ---------------- Canon shutter (folder watch) ---------------- */
+
+  const toggleShutterMode = async () => {
+    if (watchDir) {
+      setWatchDir(null);
+      setWatchMsg(null);
+      return;
+    }
+    const picker = (window as unknown as { showDirectoryPicker?: DirPicker })
+      .showDirectoryPicker;
+    if (!picker) {
+      setWatchMsg("Fitur ini butuh Chrome / Edge di laptop.");
+      return;
+    }
+    try {
+      const dir = await picker({ mode: "read" });
+      // Baseline: everything already in the folder is NOT a new shot.
+      seenRef.current = new Set();
+      pendingRef.current = new Map();
+      for await (const entry of dir.values()) {
+        if (entry.kind !== "file" || !entry.getFile || !IMAGE_RE.test(entry.name))
+          continue;
+        const f = await entry.getFile();
+        seenRef.current.add(`${f.name}|${f.lastModified}`);
+      }
+      setWatchDir(dir);
+      setWatchMsg(null);
+    } catch {
+      /* picker cancelled */
+    }
+  };
+
+  useEffect(() => {
+    if (!watchDir || captured) return;
+
+    const scan = async () => {
+      if (scanningRef.current) return;
+      scanningRef.current = true;
+      try {
+        const ready: File[] = [];
+        for await (const entry of watchDir.values()) {
+          if (entry.kind !== "file" || !entry.getFile || !IMAGE_RE.test(entry.name))
+            continue;
+          const file = await entry.getFile();
+          if (seenRef.current.has(`${file.name}|${file.lastModified}`)) continue;
+          // Wait until the file stopped growing (camera still writing).
+          if (file.size > 0 && pendingRef.current.get(file.name) === file.size) {
+            ready.push(file);
+          } else {
+            pendingRef.current.set(file.name, file.size);
+          }
+        }
+        if (!ready.length) return;
+        ready.sort((a, b) => a.lastModified - b.lastModified);
+        const file = ready[0];
+        seenRef.current.add(`${file.name}|${file.lastModified}`);
+        pendingRef.current.delete(file.name);
+
+        const bmp = await createImageBitmap(file, {
+          imageOrientation: "from-image",
+        });
+        const scale = Math.min(1, MAX_CAPTURE_DIM / Math.max(bmp.width, bmp.height));
+        const w = Math.round(bmp.width * scale);
+        const h = Math.round(bmp.height * scale);
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        if (mirror) {
+          ctx.translate(w, 0);
+          ctx.scale(-1, 1);
+        }
+        ctx.drawImage(bmp, 0, 0, w, h);
+        bmp.close();
+        applyFilterToCanvas(canvas, filterId);
+
+        setCaptured(canvas.toDataURL("image/jpeg", 0.92));
+        setFlashKey((k) => k + 1);
+        haptic("shutter");
+      } catch {
+        setWatchMsg("Gagal membaca foto dari folder. Pastikan formatnya JPG.");
+      } finally {
+        scanningRef.current = false;
+      }
+    };
+
+    const id = setInterval(() => void scan(), WATCH_INTERVAL_MS);
+    return () => clearInterval(id);
+  }, [watchDir, captured, mirror, filterId]);
 
   /* ---------------- actions ---------------- */
 
@@ -569,10 +680,25 @@ export function CameraScreen({
             <>
               <div className="mb-2 flex items-center justify-between gap-2 px-0.5">
                 <span className="label-sm text-muted">Filter</span>
-                <span className="font-mono text-[9px] tracking-[0.18em] text-muted">
-                  TRIBIZ · CAM
-                </span>
+                <button
+                  type="button"
+                  onClick={() => void toggleShutterMode()}
+                  aria-pressed={!!watchDir}
+                  className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold transition active:scale-95 ${
+                    watchDir
+                      ? "bg-navy-800 text-cream shadow-sm"
+                      : "border border-ink/10 bg-white/80 text-ink-soft"
+                  }`}
+                >
+                  <FolderOpen className="h-3 w-3" />
+                  {watchDir ? "Shutter Kamera: ON" : "Shutter Kamera"}
+                </button>
               </div>
+              {(watchDir || watchMsg) && (
+                <p className="mb-2 px-0.5 text-[10px] font-semibold text-muted">
+                  {watchMsg ?? "Menunggu jepretan dari kamera…"}
+                </p>
+              )}
               <div className="no-scrollbar -mx-1 mb-3 flex gap-1.5 overflow-x-auto px-1">
                 {PHOTO_FILTERS.map((f) => {
                   const active = f.id === filterId;
