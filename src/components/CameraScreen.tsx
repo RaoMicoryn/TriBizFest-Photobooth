@@ -144,6 +144,7 @@ export function CameraScreen({
   // Live selfie recording (whole session, mirrored + filtered like the preview).
   const liveRecRef = useRef<LiveRecorder | null>(null);
   const settingsRef = useRef({ mirror: true, filterId: "normal" });
+  const acceptShotRef = useRef<(() => Promise<void>) | null>(null);
   useEffect(() => {
     settingsRef.current = { mirror, filterId };
   }, [mirror, filterId]);
@@ -303,9 +304,12 @@ export function CameraScreen({
       setMirror(false);
       setFilterId("normal");
       setWatchDir(dir);
-      setWatchMsg("Canon siap menerima foto. Kamu cukup memotret dari kamera; JPG baru akan muncul otomatis di sini.");
-    } catch {
-      /* picker cancelled */
+      setWatchMsg(null);
+    } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") return;
+      setWatchMsg(
+        "Folder tidak bisa dibuka. Gunakan Chrome atau Edge di localhost/HTTPS, lalu izinkan akses folder.",
+      );
     }
   };
 
@@ -429,6 +433,19 @@ export function CameraScreen({
     setCaptured(null);
     haptic("select");
   };
+
+  useEffect(() => {
+    acceptShotRef.current = acceptShot;
+  });
+
+  // A transferred Canon photo is accepted automatically after a brief preview.
+  useEffect(() => {
+    if (!watchDir || !captured) return;
+    const timer = window.setTimeout(() => {
+      if (acceptShotRef.current) void acceptShotRef.current();
+    }, 900);
+    return () => window.clearTimeout(timer);
+  }, [captured, watchDir]);
 
   /** Throw away the last accepted photo and shoot that window again. */
   const undoLastShot = () => {
@@ -697,7 +714,12 @@ export function CameraScreen({
                 </span>
                 <span className="min-w-0">
                   <span className="block text-[12px] font-extrabold text-navy-800">Canon siap · menunggu foto</span>
-                  <span className="mt-0.5 block text-[10px] leading-snug text-muted">Kamu tekan shutter di Canon. Foto JPG akan masuk otomatis.</span>
+                  <span className="mt-0.5 block text-[10px] leading-snug text-muted">Tekan shutter Canon. Foto akan tampil sebentar lalu otomatis lanjut.</span>
+                  {watchMsg && (
+                    <span role="alert" className="mt-1 block text-[10px] font-semibold text-rose-700">
+                      {watchMsg}
+                    </span>
+                  )}
                 </span>
               </div>
               <button
@@ -725,6 +747,12 @@ export function CameraScreen({
               {watchMsg && (
                 <p className="mb-2 px-0.5 text-[10px] font-semibold text-muted">{watchMsg}</p>
               )}
+              <p className="mb-2 px-0.5 text-[10px] leading-snug text-muted">
+                Canon 550D perlu EOS Utility untuk transfer: sambungkan kamera
+                via USB, atur agar JPG tersimpan ke komputer, lalu pilih folder
+                tujuan yang sama di sini. Browser tidak bisa memicu shutter
+                Canon secara langsung.
+              </p>
               <div className="no-scrollbar -mx-1 mb-3 flex gap-1.5 overflow-x-auto px-1">
                 {PHOTO_FILTERS.map((f) => {
                   const active = f.id === filterId;
